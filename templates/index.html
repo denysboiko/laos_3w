@@ -5,13 +5,64 @@
     <title>Title</title>
     {% load staticfiles %}
     <script src="{% static 'lib/d3.min.js' %}"></script>
+    <script src="{% static 'lib/jquery-3.1.1.min.js' %}"></script>
+    <script src="{% static 'lib/semantic/semantic.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'lib/semantic/semantic.min.css' %}">
 </head>
 <body>
 
 
+<div class="ui secondary pointing menu">
+    <div class="ui container">
 
-    {{ data }}
+        <a class="item">
+            Home
+        </a>
+        <a class="item">
+            Messages
+        </a>
+        <a class="item" href="/upload">
+            Upload
+        </a>
+        <div class="right menu">
+            <div class="ui pointing dropdown link item">
+                <span class="text">{{ user }}</span>
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                    <div class="header">Categories</div>
+                    <a class="item" href="/admin">Admin</a>
+                    <a class="item" href="/admin/password_change/">Change Password</a>
+                    <div class="divider"></div>
+                    <a class="item" href="/admin/logout/">Log Out</a>
+                </div>
+            </div>
+        </div>
 
+    </div>
+
+
+</div>
+<div class="ui container">
+    <div class="ui statistic">
+        <div class="value">
+            5,550
+        </div>
+        <div class="label">
+            {{ data }}
+        </div>
+    </div>
+
+
+</div>
 
 </body>
+
+
+<script>
+    $('.ui.dropdown')
+        .dropdown({
+        action: 'nothing'
+    })
+    ;
+</script>
 </html>
