@@ -25,3 +25,14 @@ class Province(models.Model):
 
     class Meta:
         db_table = 'provinces'
+
+
+class Test(models.Model):
+
+    name = models.CharField(max_length=120)
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'tests'

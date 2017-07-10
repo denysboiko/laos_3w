@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from .models import *
 
+
 def home(request):
     return render(
         request,
         'index.html',
-        { 'user': request.user,
-          'data': 'Hi'
-        }
+        {'user': request.user,
+         'data': 'Hi'
+         }
     )
 
 
@@ -40,6 +41,7 @@ def upload(request):
 def download(request):
     sheet = excel.pe.Sheet([[1, 2], [3, 4]])
     return excel.make_response(sheet, "csv")
+
 
 # def import_data(request):
 #     if request.method == "POST":
@@ -79,7 +81,8 @@ def import_sheet(request):
                               request.FILES)
         if form.is_valid():
             request.FILES['file'].save_to_database(
-                name_columns_by_row=2,
+                # model=Test,
+                # mapdict=['name'])
                 model=Province,
                 mapdict=['pcode', 'name', 'name_l', 'longitude', 'latitude'])
             return HttpResponse("OK")
