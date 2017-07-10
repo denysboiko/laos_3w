@@ -15,10 +15,11 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from .viws import *
+from .views import *
 
 urlpatterns = [
     url(r'^$', home),
+    url(r'^upload/', import_sheet),
     url(r'^admin/', admin.site.urls),
 
 ]
