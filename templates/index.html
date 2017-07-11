@@ -8,6 +8,15 @@
     <script src="{% static 'lib/jquery-3.1.1.min.js' %}"></script>
     <script src="{% static 'lib/semantic/semantic.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'lib/semantic/semantic.min.css' %}">
+    <script src="{% static 'lib/d3.min.js' %}"></script>
+
+
+
+    <script src="{% static 'lib/crossfilter.min.js' %}"></script>
+    <script src="{% static 'lib/d3-queue.v3.min.js' %}"></script>
+
+    <script src="{% static 'lib/dc.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'lib/dc.min.css' %}">
 </head>
 <body>
 
@@ -43,6 +52,12 @@
 
 </div>
 <div class="ui container">
+
+
+    <div class="ui top attached tabular menu">
+        <div class="active item">Interventions</div>
+        <div class="item">Funding</div>
+    </div>
     <div class="ui statistic">
         <div class="value">
             5,550
@@ -53,6 +68,32 @@
     </div>
 
 
+    <select name="skills" multiple="" class="ui fluid dropdown">
+        <option value="">Skills</option>
+        <option value="angular">Angular</option>
+        <option value="css">CSS</option>
+        <option value="design">Graphic Design</option>
+        <option value="ember">Ember</option>
+        <option value="html">HTML</option>
+        <option value="ia">Information Architecture</option>
+        <option value="javascript">Javascript</option>
+        <option value="mech">Mechanical Engineering</option>
+        <option value="meteor">Meteor</option>
+        <option value="node">NodeJS</option>
+        <option value="plumbing">Plumbing</option>
+        <option value="python">Python</option>
+        <option value="rails">Rails</option>
+        <option value="react">React</option>
+        <option value="repair">Kitchen Repair</option>
+        <option value="ruby">Ruby</option>
+        <option value="ui">UI Design</option>
+        <option value="ux">User Experience</option>
+    </select>
+
+    <div>
+        <div id="map"></div>
+    </div>
+
 </div>
 
 </body>
@@ -61,8 +102,62 @@
 <script>
     $('.ui.dropdown')
         .dropdown({
-        action: 'nothing'
-    })
+            action: 'nothing'
+        })
     ;
 </script>
+ <script>
+
+        var mapChart = dc.geoChoroplethChart("#map");
+        $('.ui.dropdown')
+            .dropdown();
+
+
+
+        d3.queue()
+            .defer(d3.json, "{% static 'data/laos.geojson' %}")
+            .defer(d3.json, "{% static 'data/eu-projects.json' %}")
+            .await(loadData);
+
+        function loadData(err, geodata, data) {
+
+            var cf = crossfilter(data);
+
+            var province = cf.dimension(function (d) {
+                return d['PName'];
+            });
+
+            var provinces = province.group()
+                .reduceSum(function (d) {
+                    return d["Planed_amo"];
+                });
+
+            var provincetList = province.group().all().map(function (d) {
+                return d.key
+            });
+
+//            var oblastList = oblast.group().all().map(function (d) {
+//                return d.key
+//            });
+            console.log(province.group().all());
+
+            var projection = d3.geo.mercator().center([293383, 2135822]).scale(800);
+            mapChart
+                .width(1000)
+                .dimension(province)
+                .group(provinces)
+//                .colors(d3.scale.quantize().range(["#E2F2FF", "#C4E4FF", "#9ED2FF", "#81C5FF", "#6BBAFF", "#51AEFF", "#36A2FF", "#1E96FF", "#0089FF", "#0061B5"]))
+                .overlayGeoJson(
+                    geodata.features
+                    , "state"
+                    , function (d) {
+                        return d.properties['P_Eng'];
+                    }
+                )
+                .projection(projection);
+
+            dc.renderAll();
+
+        }
+    </script>
 </html>
