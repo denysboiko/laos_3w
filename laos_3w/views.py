@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from .models import *
+from rest_framework import viewsets
+from .serializers import *
 
 
 def home(request):
@@ -10,6 +12,14 @@ def home(request):
          'data': 'Hi'
          }
     )
+
+
+class ProvinceViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = Province.objects.all()
+    serializer_class = ProvinceSerializer
 
 
 from django.shortcuts import render_to_response, redirect
