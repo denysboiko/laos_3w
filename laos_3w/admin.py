@@ -1,4 +1,18 @@
 from .models import *
 from django.contrib import admin
 
-admin.site.register([Status, Province, Test])
+
+
+
+class MembershipInline(admin.TabularInline):
+    model = ProjectByProvinces
+    extra = 1
+
+
+class ProjectAdmin(admin.ModelAdmin):
+    inlines = (MembershipInline,)
+
+
+
+admin.site.register(Project, ProjectAdmin)
+admin.site.register([Status, Province, Sector, Partner, Responsible])

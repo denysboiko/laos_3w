@@ -4,6 +4,8 @@ from rest_framework import viewsets
 from .serializers import *
 
 
+import json
+
 def home(request):
     return render(
         request,
@@ -18,8 +20,31 @@ class ProvinceViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = Province.objects.all()
+    queryset = Province.objects.all().select_related()
     serializer_class = ProvinceSerializer
+
+
+class ProjectViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = ProjectByProvinces.objects.all()
+    serializer_class = ProjectSerializer2
+
+
+def Projects(request):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+
+
+    queryset = Project.objects.all().values()
+
+
+    serializer = ProjectSerializer(queryset)
+    print (queryset)
+    return JsonResponse({'data': list(queryset)})
+
 
 
 from django.shortcuts import render_to_response, redirect
@@ -31,6 +56,9 @@ import django_excel as excel
 
 class UploadFileForm(forms.Form):
     file = forms.FileField()
+
+
+from django.http import JsonResponse
 
 
 def upload(request):
@@ -93,8 +121,11 @@ def import_sheet(request):
             request.FILES['file'].save_to_database(
                 # model=Test,
                 # mapdict=['name'])
-                model=Province,
-                mapdict=['pcode', 'name', 'name_l', 'longitude', 'latitude'])
+                model=ProjectByProvinces,
+                mapdict=['id',
+                         'province_amount',
+                         'project_id',
+                         'province_id'])
             return HttpResponse("OK")
         else:
             return HttpResponseBadRequest()

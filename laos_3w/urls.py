@@ -20,11 +20,15 @@ from rest_framework import routers
 
 router = routers.DefaultRouter()
 router.register(r'provinces', ProvinceViewSet)
+router.register(r'projects', ProjectViewSet)
+
 
 urlpatterns = [
     url(r'^$', home),
     url(r'^upload/', import_sheet),
     url(r'^admin/', admin.site.urls),
-    url(r'^', include(router.urls)),
+
+    # url(r'^projects/', Projects),
+    url(r'^', include(router.urls))
 
 ]

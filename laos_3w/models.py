@@ -27,12 +27,68 @@ class Province(models.Model):
         db_table = 'provinces'
 
 
-class Test(models.Model):
 
-    name = models.CharField(max_length=120)
+class Sector(models.Model):
 
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return self.name
+    sector_name = models.CharField(max_length=120)
+
+    def __unicode__(self):
+        return self.sector_name
 
     class Meta:
-        db_table = 'tests'
+        db_table = 'sectors'
+
+
+class Responsible(models.Model):
+
+    responsible_name = models.CharField(max_length=80)
+
+    def __unicode__(self):
+        return self.responsible_name
+
+    class Meta:
+        db_table = 'responsible'
+
+
+class Partner(models.Model):
+
+    partner_name = models.CharField(max_length=80)
+
+    def __unicode__(self):
+        return self.partner_name
+
+    class Meta:
+        db_table = 'partners'
+
+
+class ProjectByProvinces(models.Model):
+
+
+    project = models.ForeignKey('Project')
+    province = models.ForeignKey(Province)
+    province_amount = models.FloatField()
+
+
+    class Meta:
+        db_table = 'project_by_provinces'
+
+
+
+class Project(models.Model):
+
+    project_code = models.IntegerField()
+    project_title = models.CharField(max_length=80)
+    year = models.IntegerField()
+    date = models.DateField()
+    planed_amount = models.FloatField()
+    partner = models.ForeignKey(Partner, related_name='partner_id')
+    sector = models.ForeignKey(Sector, related_name='sector_id')
+    status = models.ForeignKey(Status, related_name='status_id')
+    responsible = models.ForeignKey(Responsible, related_name='responsible_id')
+    province = models.ManyToManyField(Province, through='ProjectByProvinces')
+
+    def __unicode__(self):
+        return self.project_title
+
+    class Meta:
+        db_table = 'projects'
