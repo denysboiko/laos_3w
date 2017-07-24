@@ -16,13 +16,13 @@
 
     <script src="{% static 'lib/dc.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'lib/dc.min.css' %}">
+
 </head>
 <body>
 
 
 <div class="ui secondary pointing menu">
     <div class="ui container">
-
         <a class="item">
             Home
         </a>
@@ -50,6 +50,7 @@
 
 
 </div>
+
 <div class="ui container">
 
 
@@ -96,10 +97,20 @@
         <option value="ux">User Experience</option>
     </select>
 
-    <div>
-        <div id="map"></div>
-        <div id="provinces"></div>
-        <div id="sector"></div>
+    <div class="ui grid">
+        <div class="two column large screen only row">
+            <div id="map" class="column"></div>
+            <div id="partners" class="column"></div>
+        </div>
+
+        <div id="sector" class="one column large screen only row">
+        </div>
+
+
+        <div class="two column large screen only row">
+            <div id="provinces" class="column"></div>
+            <div id="status" class="column"></div>
+        </div>
 
     </div>
 
@@ -120,7 +131,9 @@
 
     d3.queue()
         .defer(d3.json, "{% static 'data/laos.geojson' %}")
-        .defer(d3.json, "{% static 'data/eu-projects.json' %}")
+        .defer(d3.json, "http://127.0.0.1:8000/projects/")
+        // data/eu-projects.json
+        // http://127.0.0.1:8000/static/data/eu-projects.json
         .await(loadData);
 
     function ResetAll() {
