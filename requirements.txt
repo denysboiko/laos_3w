@@ -1,0 +1,6 @@
+Django
+django-registration
+django-widget-tweaks
+djangorestframework
+django_excel
+psycopg2
