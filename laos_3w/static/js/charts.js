@@ -4,7 +4,7 @@ var mapChart = dc.geoChoroplethChart("#map"),
     sectorChart = dc.barChart("#sector"),
     statusChart = dc.pieChart("#status");
 
-function loadData(err, geodata, data) {
+function loadData(err, geodata, data, districts) {
 
     var cf = crossfilter(data.results);
 

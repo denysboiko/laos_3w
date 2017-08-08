@@ -132,6 +132,7 @@
     d3.queue()
         .defer(d3.json, "{% static '/data/laos.geojson' %}")
         .defer(d3.json, "http://127.0.0.1:8000/projects2/")
+        .defer(d3.json, "{% static '/data/laos-districts.geojson' %}")
         // data/eu-projects.json
         // http://127.0.0.1:8000/static/data/eu-projects.json
         .await(loadData);
