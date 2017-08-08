@@ -24,13 +24,20 @@ class ProvinceViewSet(viewsets.ModelViewSet):
     serializer_class = ProvinceSerializer
 
 
+class ProjectViewSet2(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer2
+
+
 class ProjectViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
     queryset = ProjectByProvinces.objects.all()
-    serializer_class = ProjectSerializer2
-
+    serializer_class = ProjectSerializer
 
 def Projects(request):
     """

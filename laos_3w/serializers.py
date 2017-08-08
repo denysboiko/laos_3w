@@ -9,12 +9,30 @@ class ProvinceSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProjectSerializer(serializers.Serializer):
-    project_code = serializers.IntegerField()
-    project_title = models.CharField(max_length=80)
-
-
 class ProjectSerializer2(serializers.ModelSerializer):
+
+    project_title = models.CharField(max_length=80)
+    partner = serializers.StringRelatedField()
+    status = serializers.StringRelatedField()
+    sector = serializers.StringRelatedField()
+    province = serializers.StringRelatedField(many=True)
+    province_amount = serializers.StringRelatedField(many=True, source="province")
+
+    class Meta:
+        model = Project
+        fields = [
+            'project_title',
+            'status',
+            'sector',
+            'partner',
+            'province',
+            'province_amount'
+        ]
+
+
+
+
+class ProjectSerializer(serializers.ModelSerializer):
     project = serializers.ReadOnlyField(source='project.project_title')
     province = serializers.ReadOnlyField(source='province.name')
     partner = serializers.ReadOnlyField(source='project.partner.partner_name')

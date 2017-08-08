@@ -22,7 +22,7 @@ function loadData(err, geodata, data) {
 
     var province = cf.dimension(function (d) {
         return d['province'];
-    });
+    }, true);
 
     var sector = cf.dimension(function (d) {
         return d['sector'];
@@ -37,17 +37,18 @@ function loadData(err, geodata, data) {
     });
 
     var funding_by_status = status.group()
-        .reduceSum(function (d) {
+        .reduceCount(function (d) {
             return d["province_amount"];
         });
 
     var funding_by_partner = partner.group()
-        .reduceSum(function (d) {
+        // reduceSum
+        .reduceCount(function (d) {
             return d["province_amount"];
         });
 
     var funding_by_province = province.group()
-        .reduceSum(function (d) {
+        .reduceCount(function (d) {
             return d["province_amount"];
         });
 
@@ -78,7 +79,7 @@ function loadData(err, geodata, data) {
             geodata.features
             , "state"
             , function (d) {
-                return d.properties['P_Eng'];
+                return d.properties['pr_name2'];
             }
         )
         .title(function (p) {
@@ -95,7 +96,7 @@ function loadData(err, geodata, data) {
         .height(750)
         .margins({top: 10, right: 40, bottom: 35, left: 40})
         .dimension(province)
-        .group(funding_by_province)
+        .group(province.group())
         .ordering(function (d) {
             return -d.value;
         })
@@ -103,7 +104,7 @@ function loadData(err, geodata, data) {
         // .centerBar(false)
         .gap(10) // 65 = norm
         .colors("#026CB6")
-        .x(d3.scale.ordinal().domain(provincetList))
+        // .x(d3.scale.ordinal().domain(provincetList))
         // .xUnits(dc.units.ordinal)
         .elasticX(true)
         // .xAxisLabel('Provinces')

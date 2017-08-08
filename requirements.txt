@@ -4,3 +4,4 @@ django-widget-tweaks
 djangorestframework
 django_excel
 psycopg2
+setuptools
