@@ -128,10 +128,12 @@ def import_sheet(request):
             request.FILES['file'].save_to_database(
                 # model=Test,
                 # mapdict=['name'])
-                model=ProjectByProvinces,
+                model=District,
                 mapdict=['id',
-                         'province_amount',
-                         'project_id',
+                         'dcode',
+                         'name',
+                         'name_l',
+                         'area',
                          'province_id'])
             return HttpResponse("OK")
         else:

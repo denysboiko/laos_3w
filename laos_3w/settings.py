@@ -90,7 +90,7 @@ if os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine'):
     # the unix socket at /cloudsql/<your-cloudsql-connection string>
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
+            'ENGINE': 'django.db.backends.postgresql',
             'HOST': '/cloudsql/jp-projects-laos:asia-east1:projects-db',
             'NAME': 'projects-db',
             'USER': 'dbadmin',
@@ -112,15 +112,17 @@ else:
     }
     # DATABASES = {
     #     'default': {
-    #         'ENGINE': 'django.db.backends.mysql',
+    #         'ENGINE': 'django.db.backends.postgresql',
     #         'HOST': '127.0.0.1',
-    #         'PORT': '3306',
-    #         'NAME': 'polls',
-    #         'USER': '<your-database-user>',
-    #         'PASSWORD': '<your-database-password>',
+    #         'PORT': '5432',
+    #         'NAME': 'projects-db',
+    #         'USER': 'postgres',
+    #         'PASSWORD': 'csdjhjnrf4',
     #     }
     # }
 
+
+# ./cloud_sql_proxy -instances="jp-projects-laos:asia-east1:projects-db"=tcp:5432
 
 FILE_UPLOAD_HANDLERS = ("django_excel.ExcelMemoryFileUploadHandler",
                         "django_excel.TemporaryExcelFileUploadHandler")

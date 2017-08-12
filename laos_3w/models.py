@@ -20,11 +20,26 @@ class Province(models.Model):
     longitude = models.FloatField()
     latitude = models.FloatField()
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __unicode__(self):
         return self.name
 
     class Meta:
         db_table = 'provinces'
+
+
+class District(models.Model):
+
+    dcode = models.IntegerField()
+    name = models.CharField(max_length=120)
+    name_l = models.CharField(max_length=120)
+    area = models.FloatField()
+    province = models.ForeignKey(Province)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'districts'
 
 
 

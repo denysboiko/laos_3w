@@ -15,4 +15,4 @@ class ProjectAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Project, ProjectAdmin)
-admin.site.register([Status, Province, Sector, Partner, Responsible])
+admin.site.register([Status, Province, Sector, Partner, Responsible, District])

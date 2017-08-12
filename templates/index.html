@@ -60,10 +60,10 @@
     </div>
     <div class="ui statistic">
         <div class="value" id="count">
-            <span class="filter-count"></span>
+            <span class="total-count"></span>
         </div>
         <div class="label">
-            projects selected
+            {{ data }}
         </div>
     </div>
     <div class="ui right aligned grid">
@@ -75,28 +75,31 @@
     </div>
 
 
-{#    <select name="skills" multiple="" class="ui fluid dropdown">#}
-{#        <option value="">Skills</option>#}
-{#        <option value="angular">Angular</option>#}
-{#        <option value="css">CSS</option>#}
-{#        <option value="design">Graphic Design</option>#}
-{#        <option value="ember">Ember</option>#}
-{#        <option value="html">HTML</option>#}
-{#        <option value="ia">Information Architecture</option>#}
-{#        <option value="javascript">Javascript</option>#}
-{#        <option value="mech">Mechanical Engineering</option>#}
-{#        <option value="meteor">Meteor</option>#}
-{#        <option value="node">NodeJS</option>#}
-{#        <option value="plumbing">Plumbing</option>#}
-{#        <option value="python">Python</option>#}
-{#        <option value="rails">Rails</option>#}
-{#        <option value="react">React</option>#}
-{#        <option value="repair">Kitchen Repair</option>#}
-{#        <option value="ruby">Ruby</option>#}
-{#        <option value="ui">UI Design</option>#}
-{#        <option value="ux">User Experience</option>#}
-{#    </select>#}
-
+    {#    <select name="skills" multiple="" class="ui fluid dropdown">#}
+    {#        <option value="">Skills</option>#}
+    {#        <option value="angular">Angular</option>#}
+    {#        <option value="css">CSS</option>#}
+    {#        <option value="design">Graphic Design</option>#}
+    {#        <option value="ember">Ember</option>#}
+    {#        <option value="html">HTML</option>#}
+    {#        <option value="ia">Information Architecture</option>#}
+    {#        <option value="javascript">Javascript</option>#}
+    {#        <option value="mech">Mechanical Engineering</option>#}
+    {#        <option value="meteor">Meteor</option>#}
+    {#        <option value="node">NodeJS</option>#}
+    {#        <option value="plumbing">Plumbing</option>#}
+    {#        <option value="python">Python</option>#}
+    {#        <option value="rails">Rails</option>#}
+    {#        <option value="react">React</option>#}
+    {#        <option value="repair">Kitchen Repair</option>#}
+    {#        <option value="ruby">Ruby</option>#}
+    {#        <option value="ui">UI Design</option>#}
+    {#        <option value="ux">User Experience</option>#}
+    {#    </select>#}
+    <select name="disaggregation" class="ui fluid dropdown">
+        <option value="province">Province</option>
+        <option value="district">District</option>
+    </select>
     <div class="ui grid">
         <div class="two column large screen only row">
             <div id="map" class="column"></div>
@@ -120,19 +123,23 @@
 
 
 <script>
-    $('.ui.dropdown')
+
+    $('.menu .ui.dropdown')
         .dropdown({
             action: 'nothing'
         })
+    ;
+
+    $('.ui.dropdown')
+        .dropdown()
     ;
 </script>
 <script src="{% static 'js/charts.js' %}"></script>
 <script>
 
     d3.queue()
-        .defer(d3.json, "{% static '/data/laos.geojson' %}")
-        .defer(d3.json, "http://127.0.0.1:8000/projects2/")
-        .defer(d3.json, "{% static '/data/laos-districts.geojson' %}")
+        .defer(d3.json, "{% static 'data/laos.geojson' %}")
+        .defer(d3.json, "http://127.0.0.1:8000/projects/")
         // data/eu-projects.json
         // http://127.0.0.1:8000/static/data/eu-projects.json
         .await(loadData);
