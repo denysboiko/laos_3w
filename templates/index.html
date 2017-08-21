@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+
     {% load staticfiles %}
+
     <script src="{% static 'lib/d3.min.js' %}"></script>
     <script src="{% static 'lib/jquery-3.1.1.min.js' %}"></script>
     <script src="{% static 'lib/semantic/semantic.min.js' %}"></script>
@@ -170,10 +172,12 @@
 <script src="{% static 'js/charts.js' %}"></script>
 <script>
 
+{#    Что за хуйня, почему {% static %} не работает? #}
+
     d3.queue()
-        .defer(d3.json, "{% static '/data/laos.geojson' %}")
+        .defer(d3.json, "/static/data/laos.geojson")
         .defer(d3.json, "/projects2/")
-        .defer(d3.json, "{% static '/data/laos-districts.geojson' %}")
+        .defer(d3.json, "/static/data/laos-districts.geojson")
         // data/eu-projects.json
         // http://127.0.0.1:8000/static/data/eu-projects.json
         .await(loadData);
