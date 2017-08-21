@@ -3,6 +3,16 @@ from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 
 
+class ProvinceAmountSerializer(serializers.ModelSerializer):
+
+    # province_amount = models.FloatField()
+    name = serializers.ReadOnlyField(source='province.district')
+
+    class Meta:
+        model = ProjectByProvinces
+        fields = ('name','province_amount',)
+
+
 class ProvinceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Province
@@ -12,11 +22,13 @@ class ProvinceSerializer(serializers.ModelSerializer):
 class ProjectSerializer2(serializers.ModelSerializer):
 
     project_title = models.CharField(max_length=80)
+    planed_amount = models.FloatField()
     partner = serializers.StringRelatedField()
     status = serializers.StringRelatedField()
     sector = serializers.StringRelatedField()
     province = serializers.StringRelatedField(many=True)
-    province_amount = serializers.StringRelatedField(many=True, source="province")
+    district = serializers.StringRelatedField(many=True)
+        # ProvinceAmountSerializer(many=True, source='project_by_provinces_set')
 
     class Meta:
         model = Project
@@ -25,8 +37,9 @@ class ProjectSerializer2(serializers.ModelSerializer):
             'status',
             'sector',
             'partner',
+            'planed_amount',
             'province',
-            'province_amount'
+            'district'
         ]
 
 

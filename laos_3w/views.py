@@ -20,8 +20,10 @@ class ProvinceViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = Province.objects.all().select_related()
-    serializer_class = ProvinceSerializer
+    queryset = ProjectByProvinces.objects.all().select_related()
+    serializer_class = ProvinceAmountSerializer
+
+
 
 
 class ProjectViewSet2(viewsets.ModelViewSet):

@@ -9,13 +9,26 @@
     <script src="{% static 'lib/semantic/semantic.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'lib/semantic/semantic.min.css' %}">
     <script src="{% static 'lib/d3.min.js' %}"></script>
-
+    <script src="{% static 'lib/d3-legend.min.js' %}"></script>
 
     <script src="{% static 'lib/crossfilter.min.js' %}"></script>
     <script src="{% static 'lib/d3-queue.v3.min.js' %}"></script>
 
     <script src="{% static 'lib/dc.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'lib/dc.min.css' %}">
+    <style>
+        #legend {
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+            width: 200px;
+            height: 200px
+        }
+
+        .tabular .item {
+            cursor: pointer;
+        }
+    </style>
 
 </head>
 <body>
@@ -55,8 +68,14 @@
 
 
     <div class="ui top attached tabular menu">
-        <div class="active item">Interventions</div>
-        <div class="item">Funding</div>
+        <div class="active item" data-tab="first" id="projects">Interventions</div>
+        <div class="item" data-tab="second" id="funding">Funding</div>
+    </div>
+    <div class="ui bottom attached tab segment" data-tab="first">
+
+    </div>
+    <div class="ui bottom attached tab segment active" data-tab="second">
+
     </div>
     <div class="ui statistic">
         <div class="value" id="count">
@@ -64,6 +83,14 @@
         </div>
         <div class="label">
             projects selected
+        </div>
+    </div>
+    <div class="ui statistic">
+        <div class="value" id="count">
+            <span class="filter-funding"></span>
+        </div>
+        <div class="label">
+            funding
         </div>
     </div>
     <div class="ui right aligned grid">
@@ -75,32 +102,43 @@
     </div>
 
 
-{#    <select name="skills" multiple="" class="ui fluid dropdown">#}
-{#        <option value="">Skills</option>#}
-{#        <option value="angular">Angular</option>#}
-{#        <option value="css">CSS</option>#}
-{#        <option value="design">Graphic Design</option>#}
-{#        <option value="ember">Ember</option>#}
-{#        <option value="html">HTML</option>#}
-{#        <option value="ia">Information Architecture</option>#}
-{#        <option value="javascript">Javascript</option>#}
-{#        <option value="mech">Mechanical Engineering</option>#}
-{#        <option value="meteor">Meteor</option>#}
-{#        <option value="node">NodeJS</option>#}
-{#        <option value="plumbing">Plumbing</option>#}
-{#        <option value="python">Python</option>#}
-{#        <option value="rails">Rails</option>#}
-{#        <option value="react">React</option>#}
-{#        <option value="repair">Kitchen Repair</option>#}
-{#        <option value="ruby">Ruby</option>#}
-{#        <option value="ui">UI Design</option>#}
-{#        <option value="ux">User Experience</option>#}
-{#    </select>#}
+    {#    <select name="skills" multiple="" class="ui fluid dropdown">#}
+    {#        <option value="">Skills</option>#}
+    {#        <option value="angular">Angular</option>#}
+    {#        <option value="css">CSS</option>#}
+    {#        <option value="design">Graphic Design</option>#}
+    {#        <option value="ember">Ember</option>#}
+    {#        <option value="html">HTML</option>#}
+    {#        <option value="ia">Information Architecture</option>#}
+    {#        <option value="javascript">Javascript</option>#}
+    {#        <option value="mech">Mechanical Engineering</option>#}
+    {#        <option value="meteor">Meteor</option>#}
+    {#        <option value="node">NodeJS</option>#}
+    {#        <option value="plumbing">Plumbing</option>#}
+    {#        <option value="python">Python</option>#}
+    {#        <option value="rails">Rails</option>#}
+    {#        <option value="react">React</option>#}
+    {#        <option value="repair">Kitchen Repair</option>#}
+    {#        <option value="ruby">Ruby</option>#}
+    {#        <option value="ui">UI Design</option>#}
+    {#        <option value="ux">User Experience</option>#}
+    {#    </select>#}
+
 
     <div class="ui grid">
-        <div class="two column large screen only row">
-            <div id="map" class="column"></div>
-            <div id="partners" class="column"></div>
+        <div class="large screen only row">
+            <div class="twelve wide column">
+                <select name="admin-level" id="geolevel" class="ui fluid dropdown">
+                    <option value="province">Province</option>
+                    <option value="district">District</option>
+                </select>
+                <div id="map">
+
+                </div>
+                <svg id="legend"></svg>
+
+            </div>
+            <div id="partners" class="four wide column"></div>
         </div>
 
         <div id="sector" class="one column large screen only row">
@@ -113,25 +151,28 @@
         </div>
 
     </div>
-
 </div>
 
 </body>
 
 
 <script>
-    $('.ui.dropdown')
-        .dropdown({
-            action: 'nothing'
-        })
+    $('.menu.dropdown').dropdown({
+        action: 'nothing'
+    });
+    $('.dropdown').dropdown();
+
+    $('.menu .item')
+        .tab()
     ;
+
 </script>
 <script src="{% static 'js/charts.js' %}"></script>
 <script>
 
     d3.queue()
         .defer(d3.json, "{% static '/data/laos.geojson' %}")
-        .defer(d3.json, "http://127.0.0.1:8000/projects2/")
+        .defer(d3.json, "/projects2/")
         .defer(d3.json, "{% static '/data/laos-districts.geojson' %}")
         // data/eu-projects.json
         // http://127.0.0.1:8000/static/data/eu-projects.json
@@ -145,6 +186,7 @@
     $('#reset').on('click', function (e) {
         ResetAll();
     });
+
 
 </script>
 </html>
