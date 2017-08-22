@@ -8,18 +8,6 @@ function loadData(err, geodata, data, districts) {
 
     var cf = crossfilter(data.results);
 
-
-    // {
-    //
-    //     "project": "Verification mission on Administration Agreement DCI-ASIE/2008/147-718 concerning the Multi-Donor Trust Fund for Trade Development Facility (TF No.070918)",
-    //     "province": "Vientiane Capital",
-    //     "partner": "European Union",
-    //     "province_amount": 19220.0,
-    //     "status": "Ongoing",
-    //     "sector": "Private sector development "
-    //
-    // }
-
     var province = cf.dimension(function (d) {
         return d['province'];
     }, true);
@@ -219,6 +207,16 @@ function loadData(err, geodata, data, districts) {
         .dimension(cf)
         .group(all);
 
+
+    var total_funding = cf.groupAll().reduceSum(function (d) {
+        return d["planed_amount"];
+    });
+
+    dc.numberDisplay("#funding-total")
+        .valueAccessor(function (d) {
+            return d;
+        })
+        .group(total_funding);
 
     dc.renderAll();
 

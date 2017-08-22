@@ -79,29 +79,6 @@
     <div class="ui bottom attached tab segment active" data-tab="second">
 
     </div>
-    <div class="ui statistic">
-        <div class="value" id="count">
-            <span class="filter-count"></span>
-        </div>
-        <div class="label">
-            projects selected
-        </div>
-    </div>
-    <div class="ui statistic">
-        <div class="value" id="count">
-            <span class="filter-funding"></span>
-        </div>
-        <div class="label">
-            funding
-        </div>
-    </div>
-    <div class="ui right aligned grid">
-        <div class="right floated left aligned six wide column">
-            <button class="ui button" id="reset">
-                Clear
-            </button>
-        </div>
-    </div>
 
 
     {#    <select name="skills" multiple="" class="ui fluid dropdown">#}
@@ -128,6 +105,29 @@
 
 
     <div class="ui grid">
+        <div class="ui statistic left floated">
+            <div class="value" id="count">
+                <span class="filter-count"></span>
+            </div>
+            <div class="label">
+                projects selected
+            </div>
+        </div>
+        <div class="ui statistic right floated">
+            <div class="value">
+                <span class="filter-funding" id="funding-total"></span>
+            </div>
+            <div class="label">
+                funding
+            </div>
+        </div>
+        <div class="ui right aligned">
+            <div class="right floated left aligned six wide column">
+                <button class="ui button" id="reset">
+                    Clear
+                </button>
+            </div>
+        </div>
         <div class="large screen only row">
             <div class="twelve wide column">
                 <select name="admin-level" id="geolevel" class="ui fluid dropdown">
@@ -172,12 +172,12 @@
 <script src="{% static 'js/charts.js' %}"></script>
 <script>
 
-{#    Что за хуйня, почему {% static %} не работает? #}
+    {#    Что за хуйня, почему {% static %} не работает? #}
 
     d3.queue()
-        .defer(d3.json, "/static/data/laos.geojson")
+        .defer(d3.json, '{% static "data/laos.geojson" %}')
         .defer(d3.json, "/projects2/")
-        .defer(d3.json, "/static/data/laos-districts.geojson")
+        .defer(d3.json, '{% static "data/laos-districts.geojson" %}')
         // data/eu-projects.json
         // http://127.0.0.1:8000/static/data/eu-projects.json
         .await(loadData);
