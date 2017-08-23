@@ -81,8 +81,8 @@ class ProjectByProvinces(models.Model):
 
     project = models.ForeignKey('Project')
     province = models.ForeignKey(Province)
-    district = models.ForeignKey(District, blank=True, null=True)
-    province_amount = models.FloatField()
+    # district = models.ForeignKey(District, blank=True, null=True)
+    # province_amount = models.FloatField()
 
 
     class Meta:
@@ -93,16 +93,16 @@ class ProjectByProvinces(models.Model):
 class Project(models.Model):
 
     project_code = models.IntegerField()
-    project_title = models.CharField(max_length=280)
+    project_title = models.TextField(max_length=280)
     year = models.IntegerField()
     date = models.DateField()
     planed_amount = models.FloatField()
     partner = models.ForeignKey(Partner, related_name='partner_id')
     sector = models.ForeignKey(Sector, related_name='sector_id')
     status = models.ForeignKey(Status, related_name='status_id')
-    responsible = models.ForeignKey(Responsible, related_name='x')
+    responsible = models.ForeignKey(Responsible, related_name='responsible_id')
     province = models.ManyToManyField(Province, through='ProjectByProvinces')
-    district = models.ManyToManyField(District, through='ProjectByProvinces')
+    # district = models.ManyToManyField(District, through='ProjectByProvinces')
 
     def __unicode__(self):
         return self.project_title

@@ -3,8 +3,8 @@ from .models import *
 from rest_framework import viewsets
 from .serializers import *
 
-
 import json
+
 
 def home(request):
     return render(
@@ -24,8 +24,6 @@ class ProvinceViewSet(viewsets.ModelViewSet):
     serializer_class = ProvinceAmountSerializer
 
 
-
-
 class ProjectViewSet2(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
@@ -41,19 +39,17 @@ class ProjectViewSet(viewsets.ModelViewSet):
     queryset = ProjectByProvinces.objects.all()
     serializer_class = ProjectSerializer
 
+
 def Projects(request):
     """
     API endpoint that allows users to be viewed or edited.
     """
 
-
     queryset = Project.objects.all().values()
-
 
     serializer = ProjectSerializer(queryset)
     print (queryset)
     return JsonResponse({'data': list(queryset)})
-
 
 
 from django.shortcuts import render_to_response, redirect
@@ -128,15 +124,30 @@ def import_sheet(request):
                               request.FILES)
         if form.is_valid():
             request.FILES['file'].save_to_database(
-                # model=Test,
-                # mapdict=['name'])
-                model=District,
+                # save_book_to_database
+                model=ProjectByProvinces,
+                # initializers=[None, ],
                 mapdict=['id',
-                         'dcode',
-                         'name',
-                         'name_l',
-                         'area',
-                         'province_id'])
+                         'province_amount',
+                         'project_id',
+                         'province_id',
+                         # 'district_id'
+                         ]
+                # [
+                #
+                #     'id',
+                #     'project_code',
+                #     'project_title',
+                #     'year',
+                #     'date',
+                #     'planed_amount',
+                #     'partner_id',
+                #     'sector_id',
+                #     'status_id',
+                #     'responsible_id'
+                #
+                # ]
+            )
             return HttpResponse("OK")
         else:
             return HttpResponseBadRequest()

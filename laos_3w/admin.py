@@ -2,8 +2,6 @@ from .models import *
 from django.contrib import admin
 
 
-
-
 class MembershipInline(admin.TabularInline):
     model = ProjectByProvinces
     extra = 1

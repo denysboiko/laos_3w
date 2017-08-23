@@ -101,7 +101,7 @@ if os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine'):
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'HOST': '/cloudsql/jp-projects-laos:asia-east1:jp-laos-db',
-            'NAME': 'jp-laos-db',
+            'NAME': 'jplaos',
             'USER': 'dbadmin',
             'PASSWORD': 'jp-projects-db',
         }
@@ -113,22 +113,22 @@ else:
     #     $ cloud_sql_proxy -instances=[INSTANCE_CONNECTION_NAME]=tcp:3306
     #
     # See https://cloud.google.com/sql/docs/mysql-connect-proxy
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'HOST': '127.0.0.1',
-            'PORT': '3306',
-            'NAME': 'jp-laos-db',
-            'USER': 'dbadmin',
-            'PASSWORD': 'jp-projects-db',
-        }
-    }
     # DATABASES = {
     #     'default': {
-    #         'ENGINE': 'django.db.backends.sqlite3',
-    #         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    #         'ENGINE': 'django.db.backends.mysql',
+    #         'HOST': '127.0.0.1',
+    #         'PORT': '3306',
+    #         'NAME': 'jplaos',
+    #         'USER': 'dbadmin',
+    #         'PASSWORD': 'jp-projects-db',
     #     }
     # }
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
     # DATABASES = {
     #     'default': {
     #         'ENGINE': 'django.db.backends.postgresql',

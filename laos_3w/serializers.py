@@ -27,7 +27,7 @@ class ProjectSerializer2(serializers.ModelSerializer):
     status = serializers.StringRelatedField()
     sector = serializers.StringRelatedField()
     province = serializers.StringRelatedField(many=True)
-    district = serializers.StringRelatedField(many=True)
+    # district = serializers.StringRelatedField(many=True)
         # ProvinceAmountSerializer(many=True, source='project_by_provinces_set')
 
     class Meta:
@@ -39,7 +39,7 @@ class ProjectSerializer2(serializers.ModelSerializer):
             'partner',
             'planed_amount',
             'province',
-            'district'
+            # 'district'
         ]
 
 

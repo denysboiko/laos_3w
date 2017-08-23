@@ -12,9 +12,9 @@ function loadData(err, geodata, data, districts) {
         return d['province'];
     }, true);
 
-    var district = cf.dimension(function (d) {
-        return d['district'];
-    }, true);
+    // var district = cf.dimension(function (d) {
+    //     return d['district'];
+    // }, true);
 
     var sector = cf.dimension(function (d) {
         return d['sector'];
@@ -53,10 +53,10 @@ function loadData(err, geodata, data, districts) {
             return d["project_title"];
         });
 
-    var count_by_district = district.group()
-        .reduceCount(function (d) {
-            return d["project_title"];
-        });
+    // var count_by_district = district.group()
+    //     .reduceCount(function (d) {
+    //         return d["project_title"];
+    //     });
 
     var funding_by_province = province.group()
         .reduceSum(function (d) {
