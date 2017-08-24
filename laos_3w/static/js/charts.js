@@ -88,6 +88,9 @@ function loadData(err, geodata, data, districts) {
         .domain([1, 3, 6, 9, 12, 15])
         .range(['#ece7f2', '#d0d1e6', '#a6bddb', '#74a9cf', '#3690c0', '#0570b0', '#034e7b']);
 
+    var colorscale2 = d3.scale.threshold()
+        .domain([1000000, 3000000, 5000000, 8000000, 10000000, 50000000])
+        .range(['#ece7f2', '#d0d1e6', '#a6bddb', '#74a9cf', '#3690c0', '#0570b0', '#034e7b']);
 
     //
     mapChart
@@ -127,20 +130,22 @@ function loadData(err, geodata, data, districts) {
             return -d.value;
         })
         .transitionDuration(500)
-        // .centerBar(false)
-        .gap(10) // 65 = norm
-        .colors("#026CB6")
-        // .x(d3.scale.ordinal().domain(provincetList))
-        // .xUnits(dc.units.ordinal)
-        .elasticX(true)
         // .xAxisLabel('Provinces')
-        // .yAxisLabel('# of ??? by province')
-
+        .gap(10)
+        .colors("#026CB6")
+        .elasticX(true)
         .on('filtered', function (chart, filter) {
-
         })
         .xAxis()
         .ticks(5);
+
+
+    // 65 = norm
+    // .centerBar(false)
+    // .xAxisLabel('Provinces')
+    // .yAxisLabel('# of ??? by province')
+    // .x(d3.scale.ordinal().domain(provincetList))
+    // .xUnits(dc.units.ordinal)
     // .tickFormat();
 
 
@@ -187,10 +192,13 @@ function loadData(err, geodata, data, districts) {
 
 
     statusChart
-        .width(560)
-        .height(560)
+        .width(600)
+        .height(600)
         .slicesCap(4)
         .innerRadius(100)
+        .externalLabels(30)
+        .externalRadiusPadding(50)
+        .drawPaths(true)
         .dimension(status)
         .group(count_by_status)
         .legend(dc.legend())
@@ -200,6 +208,21 @@ function loadData(err, geodata, data, districts) {
                 return d.data.key + ' ' + dc.utils.printSingleValue((d.endAngle - d.startAngle) / (2 * Math.PI) * 100) + '%';
             })
         });
+
+    // statusChart.on('pretransition', function (chart) {
+    //     chart.selectAll('.dc-legend-item text')
+    //         .text('')
+    //         .append('tspan')
+    //         .text(function (d) {
+    //             return d.name;
+    //         })
+    //         .append('tspan')
+    //         .attr('x', 100)
+    //         .attr('text-anchor', 'end')
+    //         .text(function (d) {
+    //             return d.data;
+    //         });
+    // });
 
     var all = cf.groupAll();
 
@@ -221,6 +244,24 @@ function loadData(err, geodata, data, districts) {
     dc.renderAll();
 
 
+
+    // $('#geolevel').on('change', function (e) {
+    //     console.log($(this).val())
+    // })
+    var svg = d3.select("#legend");
+
+    svg.append("g")
+        .attr("class", "legendQuant")
+        .attr("transform", "translate(20,20)");
+
+    var legend = d3.legend.color()
+        .labelFormat(d3.format(",.0f"))
+        .scale(colorscale);
+
+    svg.select(".legendQuant")
+        .call(legend);
+
+
     // fix interactions between map and oblast charts
 
     var all = dc.chartRegistry.list();
@@ -240,7 +281,11 @@ function loadData(err, geodata, data, districts) {
     };
 
     $("#projects").on('click', function (e) {
-        mapChart.group(count_by_province)
+        mapChart.group(count_by_province).colors(colorscale)
+        legend.scale(colorscale)
+            svg.select(".legendQuant")
+        .call(legend);
+
         provinceChart.group(count_by_province)
         partnersChart.group(count_by_partner);
         sectorChart.group(count_by_sector)
@@ -249,28 +294,18 @@ function loadData(err, geodata, data, districts) {
     });
 
     $("#funding").on('click', function (e) {
-        mapChart.group(funding_by_province)
+        mapChart
+            .group(funding_by_province)
+            .colors(colorscale2)
+        legend.scale(colorscale2)
+            svg.select(".legendQuant")
+        .call(legend);
+
         provinceChart.group(funding_by_province)
         partnersChart.group(funding_by_partner);
         sectorChart.group(funding_by_sector)
         statusChart.group(funding_by_status)
         dc.renderAll();
     });
-
-    // $('#geolevel').on('change', function (e) {
-    //     console.log($(this).val())
-    // })
-    var svg = d3.select("#legend");
-
-    svg.append("g")
-        .attr("class", "legendQuant")
-        .attr("transform", "translate(20,20)");
-
-    var legend = d3.legend.color()
-        .labelFormat(d3.format(",.0f"))
-        .scale(colorscale);
-
-    svg.select(".legendQuant")
-        .call(legend);
 
 }

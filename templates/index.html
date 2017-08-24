@@ -23,7 +23,7 @@
             position: absolute;
             bottom: 0;
             left: 50px;
-            width: 200px;
+            width: 300px;
             height: 200px
         }
 
@@ -38,6 +38,24 @@
         #count {
             float: none;
         }
+
+        .dc-chart g.row text {
+            fill: #000;
+            text-shadow: 0px 0px 3px #fff;
+        }
+
+        .dc-chart g.state path {
+            stroke: #111;
+        }
+
+        .dc-chart .selected path {
+            stroke-width: 1;
+            fill-opacity: 1;
+        }
+
+{#        .dc-chart g.deselected path {#}
+{#            fill: #eee;#}
+{#        }#}
     </style>
 
 </head>
