@@ -6,15 +6,17 @@ var mapChart = dc.geoChoroplethChart("#map"),
 
 function loadData(err, geodata, data, districts) {
 
+    $('#loader').toggleClass('active');
+
     var cf = crossfilter(data.results);
 
     var province = cf.dimension(function (d) {
         return d['province'];
     }, true);
 
-    // var district = cf.dimension(function (d) {
-    //     return d['district'];
-    // }, true);
+    var district = cf.dimension(function (d) {
+        return d['district'];
+    }, true);
 
     var sector = cf.dimension(function (d) {
         return d['sector'];
@@ -38,6 +40,11 @@ function loadData(err, geodata, data, districts) {
             return d["planed_amount"];
         });
 
+    var partner_group = partner.group()
+        .reduceCount(function (d) {
+            return d["partner"];
+        });
+
     var count_by_partner = partner.group()
         .reduceCount(function (d) {
             return d["partner"];
@@ -48,15 +55,16 @@ function loadData(err, geodata, data, districts) {
             return d["planed_amount"];
         });
 
+
     var count_by_province = province.group()
         .reduceCount(function (d) {
             return d["project_title"];
         });
 
-    // var count_by_district = district.group()
-    //     .reduceCount(function (d) {
-    //         return d["project_title"];
-    //     });
+    var count_by_district = district.group()
+        .reduceCount(function (d) {
+            return d["project_title"];
+        });
 
     var funding_by_province = province.group()
         .reduceSum(function (d) {
@@ -113,9 +121,9 @@ function loadData(err, geodata, data, districts) {
             }
         )
         .title(function (p) {
-            return p.key
+            return p.key + ': ' + p.value
                 + '\n'
-                + 'Index Gain: ' + p.value + '\n'
+                + 'Funding: ' + p.value
             // + 'Index Gain in Percentage: ' + numberFormat(p.value.percentageGain) + '%\n';
         })
         .projection(projection);
@@ -154,7 +162,7 @@ function loadData(err, geodata, data, districts) {
         .height(180)
         .margins({top: 10, right: 40, bottom: 35, left: 40})
         .dimension(partner)
-        .group(count_by_partner)
+        .group(partner.group())
         .ordering(function (d) {
             return -d.value;
         })
@@ -171,12 +179,12 @@ function loadData(err, geodata, data, districts) {
 
     sectorChart.width(1200)
         .height(350)
-        .margins({top: 10, right: 50, bottom: 35, left: 40})
+        .margins({top: 10, right: 50, bottom: 35, left: 60})
         .dimension(sector)
         .group(count_by_sector)
         .transitionDuration(500)
         .centerBar(false)
-        .gap(15) // 65 = norm
+        .gap(65)
         .colors("#026CB6")
         .x(d3.scale.ordinal().domain(sector.group().all().map(function (d) {
             return d.key
@@ -184,7 +192,7 @@ function loadData(err, geodata, data, districts) {
         .xUnits(dc.units.ordinal)
         .elasticY(true)
         .xAxisLabel('Sectors')
-        .yAxisLabel('# of ??? by sector')
+        .yAxisLabel('Interventions by Sector')
         .on('filtered', function (chart, filter) {
 
         })
@@ -244,7 +252,6 @@ function loadData(err, geodata, data, districts) {
     dc.renderAll();
 
 
-
     // $('#geolevel').on('change', function (e) {
     //     console.log($(this).val())
     // })
@@ -281,31 +288,109 @@ function loadData(err, geodata, data, districts) {
     };
 
     $("#projects").on('click', function (e) {
-        mapChart.group(count_by_province).colors(colorscale)
-        legend.scale(colorscale)
-            svg.select(".legendQuant")
-        .call(legend);
+        mapChart.group(count_by_province).colors(colorscale);
+        legend.scale(colorscale);
+        svg.select(".legendQuant")
+            .call(legend);
 
-        provinceChart.group(count_by_province)
+        provinceChart.group(count_by_province);
         partnersChart.group(count_by_partner);
-        sectorChart.group(count_by_sector)
-        statusChart.group(count_by_status)
+
+        // partner.group()
+        //     .reduceCount(function (d) {
+        //         return d["project_title"];
+        //     });
+
+        sectorChart.group(count_by_sector);
+        statusChart.group(count_by_status);
         dc.renderAll();
     });
 
     $("#funding").on('click', function (e) {
         mapChart
             .group(funding_by_province)
-            .colors(colorscale2)
-        legend.scale(colorscale2)
-            svg.select(".legendQuant")
-        .call(legend);
+            .colors(colorscale2);
+        legend.scale(colorscale2);
+        svg.select(".legendQuant")
+            .call(legend);
 
-        provinceChart.group(funding_by_province)
+        provinceChart.group(funding_by_province);
         partnersChart.group(funding_by_partner);
-        sectorChart.group(funding_by_sector)
-        statusChart.group(funding_by_status)
+
+        // partner.group()
+        //     .reduceSum(function (d) {
+        //         return d["planed_amount"];
+        //     });
+
+        sectorChart.group(funding_by_sector);
+        statusChart.group(funding_by_status);
         dc.renderAll();
+    });
+
+
+    $('#geolevel').on('change', function (e) {
+
+        var geolevel = $(this).val();
+
+        if (geolevel == 'province') {
+            mapChart.overlayGeoJson(
+                geodata.features
+                , "state"
+                , function (d) {
+                    return d.properties['pr_name2'];
+                }
+            )
+                .dimension(province)
+                .group(count_by_province);
+
+            dc.renderAll();
+        } else {
+            mapChart.overlayGeoJson(
+                districts.features
+                , "state"
+                , function (d) {
+                    return d.properties['DName'];
+                }
+            )
+                .dimension(district)
+                .group(count_by_district);
+
+            dc.renderAll();
+        }
+    });
+
+
+    function downloadData() {
+
+        var header = [
+            'project_title',
+            'status',
+            'sector',
+            'partner',
+            'planed_amount',
+            'province',
+            'province_l',
+            'district'
+        ];
+
+        var data = partner.top(Infinity)
+            .map(function (record) {
+                return header.map(function (field) {
+                    return (record[field] instanceof Array ? record[field].join(';') : record[field])
+
+                })
+            });
+
+
+        data.unshift(header);
+        var result = d3.csv.formatRows(data);
+        var blob = new Blob([result], {type: "text/csv;charset=utf-8"});
+        saveAs(blob, 'jp-projects-laos-dataset-' + (new Date()).getTime() + '.csv')
+
+    }
+
+    $('#download').on('click', function (e) {
+        downloadData();
     });
 
 }
