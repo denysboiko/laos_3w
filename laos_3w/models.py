@@ -10,6 +10,7 @@ class Status(models.Model):
 
     class Meta:
         db_table = 'status'
+        verbose_name_plural = "statuses"
 
 
 class Province(models.Model):
@@ -42,7 +43,6 @@ class District(models.Model):
         db_table = 'districts'
 
 
-
 class Sector(models.Model):
 
     sector_name = models.CharField(max_length=120)
@@ -52,6 +52,17 @@ class Sector(models.Model):
 
     class Meta:
         db_table = 'sectors'
+
+
+class Subsector(models.Model):
+
+    other_subsector_name = models.CharField(max_length=80)
+
+    def __unicode__(self):
+        return self.other_subsector_name
+
+    class Meta:
+        db_table = 'subsectors'
 
 
 class Responsible(models.Model):
@@ -76,30 +87,41 @@ class Partner(models.Model):
         db_table = 'partners'
 
 
-class ProjectByProvinces(models.Model):
+class ImplementingPartner(models.Model):
 
+    implementing_partner_name = models.CharField(max_length=120)
+
+    def __unicode__(self):
+        return self.implementing_partner_name
+
+    class Meta:
+        db_table = 'implementing_partners'
+
+
+class ProjectByProvinces(models.Model):
 
     project = models.ForeignKey('Project')
     province = models.ForeignKey(Province)
     district = models.ForeignKey(District, blank=True, null=True)
     # province_amount = models.FloatField()
 
-
     class Meta:
         db_table = 'project_by_provinces'
-
+        unique_together = (("project", "province", "district"),)
 
 
 class Project(models.Model):
 
-    project_code = models.IntegerField()
+    project_code = models.CharField(max_length=40, blank=True, null=True)
     project_title = models.TextField(max_length=280)
     year = models.IntegerField()
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)
     planed_amount = models.FloatField()
     partner = models.ForeignKey(Partner, related_name='partner_id')
+    implementing_partner = models.ForeignKey(ImplementingPartner, blank=True, null=True)
     sector = models.ForeignKey(Sector, related_name='sector_id')
+    other_subsector = models.ForeignKey(Subsector, blank=True, null=True)
     status = models.ForeignKey(Status, related_name='status_id')
     responsible = models.ForeignKey(Responsible, related_name='responsible_id', blank=True, null=True)
     province = models.ManyToManyField(Province, through='ProjectByProvinces')

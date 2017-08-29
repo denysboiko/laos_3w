@@ -1,7 +1,9 @@
 var mapChart = dc.geoChoroplethChart("#map"),
     provinceChart = dc.rowChart("#provinces"),
+    impPartnersChart = dc.rowChart("#implementing_partners"),
     partnersChart = dc.rowChart("#partners"),
     sectorChart = dc.barChart("#sector"),
+    subsectorChart = dc.barChart("#subsector"),
     statusChart = dc.pieChart("#status");
 
 function loadData(err, geodata, data, districts) {
@@ -29,6 +31,35 @@ function loadData(err, geodata, data, districts) {
     var status = cf.dimension(function (d) {
         return d['status'];
     });
+
+    var implementing_partner = cf.dimension(function (d) {
+        return d['implementing_partner'];
+    });
+
+    var other_subsector = cf.dimension(function (d) {
+        return d['other_subsector'];
+    });
+
+    var count_by_implementing_partner = implementing_partner.group()
+        .reduceCount(function (d) {
+            return d["implementing_partner"];
+        });
+
+    var funding_by_implementing_partner = implementing_partner.group()
+        .reduceSum(function (d) {
+            return d["planed_amount"];
+        });
+
+    var count_by_other_subsector = other_subsector.group()
+        .reduceCount(function (d) {
+            return d["other_subsector"];
+        });
+
+    var funding_by_other_subsector = other_subsector.group()
+        .reduceSum(function (d) {
+            return d["planed_amount"];
+        });
+
 
     var count_by_status = status.group()
         .reduceCount(function (d) {
@@ -156,6 +187,29 @@ function loadData(err, geodata, data, districts) {
     // .xUnits(dc.units.ordinal)
     // .tickFormat();
 
+    impPartnersChart
+        .width(500)
+        .height(750)
+        .margins({top: 10, right: 40, bottom: 35, left: 40})
+        .dimension(implementing_partner)
+        .group(implementing_partner.group())
+        .data(function (group) {
+            console.log(group.top(25))
+            return group.top(25);
+        })
+        .ordering(function (d) {
+            return -d.value;
+        })
+        .transitionDuration(500)
+        // .xAxisLabel('Provinces')
+        .gap(10)
+        .colors("#026CB6")
+        .elasticX(true)
+        .on('filtered', function (chart, filter) {
+        })
+        .xAxis()
+        .ticks(5);
+
 
     partnersChart
         .width(350)
@@ -196,6 +250,41 @@ function loadData(err, geodata, data, districts) {
         .on('filtered', function (chart, filter) {
 
         })
+        .xAxis().tickFormat();
+
+    subsectorChart.width(1200)
+        .height(350)
+        .margins({top: 10, right: 50, bottom: 35, left: 60})
+        .dimension(other_subsector)
+        .group(count_by_other_subsector)
+        // .data(function (group) {
+        //
+        //     var result = group.all()
+        //
+        //
+        //     console.log(group.top(12));
+        //     console.log(group.all());
+        //     console.log(group.all().filter(function(d) {
+        //         return d.key !== null
+        //     }));
+        //
+        //     return result;
+        // })
+        .transitionDuration(500)
+        .centerBar(false)
+        .gap(45)
+        .colors("#026CB6")
+        .x(d3.scale.ordinal().domain(other_subsector.group().all().map(function (d) {
+            return d.key
+        })))
+        .xUnits(dc.units.ordinal)
+        .elasticY(true)
+        .xAxisLabel('Sectors')
+        .yAxisLabel('Interventions by Sector')
+        .on('filtered', function (chart, filter) {
+
+        })
+        // .filter(function(d) { console.log(d.key); return d.key !== null; })
         .xAxis().tickFormat();
 
 
@@ -263,6 +352,15 @@ function loadData(err, geodata, data, districts) {
 
     var legend = d3.legend.color()
         .labelFormat(d3.format(",.0f"))
+        // .labels(function (i, genLength, generatedLabels) {
+        //     if (i === 0) {
+        //         return generatedLabels[i]
+        //             .replace('NaN to', 'Less than')
+        //     } else if (i === genLength - 1) {
+        //         return 'More than ' + generatedLabels[genLength - 1].replace(' to NaN', '')
+        //     }
+        //     return generatedLabels[i]
+        // })
         .scale(colorscale);
 
     svg.select(".legendQuant")
