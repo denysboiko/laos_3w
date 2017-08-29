@@ -25,7 +25,9 @@ class ProjectSerializer2(serializers.ModelSerializer):
     planed_amount = models.FloatField()
     partner = serializers.StringRelatedField()
     status = serializers.StringRelatedField()
+    implementing_partner = serializers.StringRelatedField()
     sector = serializers.StringRelatedField()
+    other_subsector = serializers.StringRelatedField()
     province = serializers.StringRelatedField(many=True)
     province_l = serializers.SlugRelatedField(
         many=True,
@@ -41,9 +43,11 @@ class ProjectSerializer2(serializers.ModelSerializer):
         fields = [
             'project_title',
             'status',
+            'implementing_partner',
             'sector',
             'partner',
             'planed_amount',
+            'other_subsector',
             'province',
             'province_l',
             'district'

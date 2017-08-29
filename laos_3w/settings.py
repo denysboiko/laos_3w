@@ -85,18 +85,12 @@ WSGI_APPLICATION = 'laos_3w.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
+
 if os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine'):
+
     # Running on production App Engine, so connect to Google Cloud SQL using
     # the unix socket at /cloudsql/<your-cloudsql-connection string>
-    # DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.db.backends.postgresql',
-    #         'HOST': '/cloudsql/jp-projects-laos:asia-east1:projects-db',
-    #         'NAME': 'projects-db',
-    #         'USER': 'dbadmin',
-    #         'PASSWORD': 'jp_projects_2017',
-    #     }
-    # }
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
@@ -106,13 +100,16 @@ if os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine'):
             'PASSWORD': 'jp-projects-db',
         }
     }
+
 else:
+
     # Running locally so connect to either a local MySQL instance or connect to
     # Cloud SQL via the proxy. To start the proxy via command line:
     #
     #     $ cloud_sql_proxy -instances=[INSTANCE_CONNECTION_NAME]=tcp:3306
     #
     # See https://cloud.google.com/sql/docs/mysql-connect-proxy
+
     # DATABASES = {
     #     'default': {
     #         'ENGINE': 'django.db.backends.mysql',
@@ -123,25 +120,14 @@ else:
     #         'PASSWORD': 'jp-projects-db',
     #     }
     # }
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
-    # DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.db.backends.postgresql',
-    #         'HOST': '127.0.0.1',
-    #         'PORT': '5432',
-    #         'NAME': 'projects-db',
-    #         'USER': 'postgres',
-    #         'PASSWORD': 'csdjhjnrf4',
-    #     }
-    # }
 
-
-# ./cloud_sql_proxy -instances="jp-projects-laos:asia-east1:projects-db"=tcp:5432
 
 FILE_UPLOAD_HANDLERS = ("django_excel.ExcelMemoryFileUploadHandler",
                         "django_excel.TemporaryExcelFileUploadHandler")
