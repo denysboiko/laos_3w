@@ -1,12 +1,28 @@
 var mapChart = dc.geoChoroplethChart("#map"),
+    mapDistrictChart = dc.geoChoroplethChart("#map-district"),
     provinceChart = dc.rowChart("#provinces"),
     impPartnersChart = dc.rowChart("#implementing_partners"),
     partnersChart = dc.rowChart("#partners"),
     sectorChart = dc.barChart("#sector"),
-    subsectorChart = dc.barChart("#subsector"),
-    statusChart = dc.pieChart("#status");
+    subsectorChart = dc.rowChart("#subsector"),
+    // subsectorChart = dc.barChart("#subsector"),
+    statusChart = dc.rowChart("#status");
+// statusChart = dc.pieChart("#status");
 
 function loadData(err, geodata, data, districts) {
+
+
+    function show(container, chart) {
+        document.getElementById('map').style.display = 'none';
+        document.getElementById('map-district').style.display = 'none';
+        document.getElementById(container).style.display = 'block';
+        chart.render();
+    }
+
+
+    var districtsDict = {
+        'Bualapha District': 'Khammouan'
+    };
 
     $('#loader').toggleClass('active');
 
@@ -17,7 +33,7 @@ function loadData(err, geodata, data, districts) {
     }, true);
 
     var district = cf.dimension(function (d) {
-        return d['district'];
+        return d['district'] ? d['district'] : 'No district';
     }, true);
 
     var sector = cf.dimension(function (d) {
@@ -33,11 +49,11 @@ function loadData(err, geodata, data, districts) {
     });
 
     var implementing_partner = cf.dimension(function (d) {
-        return d['implementing_partner'];
+        return d['implementing_partner'] ? d['implementing_partner'] : 'No implementing partner';
     });
 
     var other_subsector = cf.dimension(function (d) {
-        return d['other_subsector'];
+        return d['other_subsector'] ? d['other_subsector'] : 'No subsector';
     });
 
     var count_by_implementing_partner = implementing_partner.group()
@@ -87,12 +103,29 @@ function loadData(err, geodata, data, districts) {
         });
 
 
-    var count_by_province = province.group()
-        .reduceCount(function (d) {
-            return d["project_title"];
-        });
+    function reduceAdd(p, v) {
+        ++p.count;
+        p.total += v["planed_amount"] / p.count;
+        return p;
+    }
 
-    var count_by_district = district.group()
+    function reduceRemove(p, v) {
+        --p.count;
+        p.total -= v["planed_amount"] / p.count;
+        return p;
+    }
+
+    function reduceInitial() {
+        return {
+            count: 0,
+            total: 0
+        };
+    }
+
+    // var count_by_province = province.group()
+    //     .reduce(reduceAdd, reduceRemove, reduceInitial);
+
+    var count_by_province = province.group()
         .reduceCount(function (d) {
             return d["project_title"];
         });
@@ -101,6 +134,18 @@ function loadData(err, geodata, data, districts) {
         .reduceSum(function (d) {
             return d["planed_amount"] / d.province.length;
         });
+
+    var count_by_district = district.group()
+        .reduceCount(function (d) {
+            return d["project_title"];
+        });
+
+
+    var funding_by_district = district.group()
+        .reduceSum(function (d) {
+            return d["planed_amount"] / d.district.length;
+        });
+
 
     var count_by_sector = sector.group()
         .reduceCount(function (d) {
@@ -122,7 +167,7 @@ function loadData(err, geodata, data, districts) {
 //     console.log(funding_by_province);
 //     console.log(centroid);
 
-    var projection = d3.geo.mercator().center([106, 19]).scale(3600);
+    var projection = d3.geo.mercator().center([108, 19]).scale(3100);
     var colorscale = d3.scale.threshold()
         .domain([1, 3, 6, 9, 12, 15])
         .range(['#ece7f2', '#d0d1e6', '#a6bddb', '#74a9cf', '#3690c0', '#0570b0', '#034e7b']);
@@ -132,11 +177,37 @@ function loadData(err, geodata, data, districts) {
         .range(['#ece7f2', '#d0d1e6', '#a6bddb', '#74a9cf', '#3690c0', '#0570b0', '#034e7b']);
 
     //
+    mapDistrictChart
+        .width(500)
+        .height(600)
+        .dimension(district)
+        .group(count_by_district)
+        .colors(colorscale)
+        // d3.scale.quantize().range(['#fff7fb','#ece7f2','#d0d1e6','#a6bddb','#74a9cf','#3690c0','#0570b0','#034e7b']))
+        // ["#E2F2FF", "#C4E4FF", "#9ED2FF", "#81C5FF", "#6BBAFF", "#51AEFF", "#36A2FF", "#1E96FF", "#0089FF", "#0061B5"]
+        .overlayGeoJson(
+            districts.features
+            , "state"
+            , function (d) {
+                return d.properties['DName'];
+            }
+        )
+        .title(function (p) {
+            return p.key + ': ' + p.value
+                + '\n'
+                + 'Funding: ' + p.value;
+            // d3.format('.3s')()
+            // + 'Index Gain in Percentage: ' + numberFormat(p.value.percentageGain) + '%\n';
+        })
+        .projection(projection);
+
+
     mapChart
-        .width(700)
-        .height(650)
+        .width(500)
+        .height(600)
         .dimension(province)
         .group(count_by_province)
+
         // funding_by_province
         .colors(colorscale)
         // d3.scale.quantize().range(['#fff7fb','#ece7f2','#d0d1e6','#a6bddb','#74a9cf','#3690c0','#0570b0','#034e7b']))
@@ -151,17 +222,21 @@ function loadData(err, geodata, data, districts) {
 
             }
         )
+        // .valueAccessor(function (d) {
+        //     return d.value.count;
+        // })
         .title(function (p) {
             return p.key + ': ' + p.value
                 + '\n'
-                + 'Funding: ' + p.value
+                + 'Funding: ' + p.value;
             // + 'Index Gain in Percentage: ' + numberFormat(p.value.percentageGain) + '%\n';
         })
+
         .projection(projection);
 
     provinceChart
-        .width(500)
-        .height(750)
+        .width(400)
+        .height(650)
         .margins({top: 10, right: 40, bottom: 35, left: 40})
         .dimension(province)
         .group(province.group())
@@ -174,6 +249,11 @@ function loadData(err, geodata, data, districts) {
         .colors("#026CB6")
         .elasticX(true)
         .on('filtered', function (chart, filter) {
+
+            // if ($('#geolevel').val() === 'district') {
+            //     console.log(filter);
+            //     mapChart.filter(['Bualapha District'])
+            // }
         })
         .xAxis()
         .ticks(5);
@@ -194,8 +274,12 @@ function loadData(err, geodata, data, districts) {
         .dimension(implementing_partner)
         .group(implementing_partner.group())
         .data(function (group) {
-            console.log(group.top(25))
-            return group.top(25);
+            // console.log(group.top(25))
+
+            return group.top(25).filter(function (d) {
+                return d.key !== 'No implementing partner'
+            });
+            // return group.top(25);
         })
         .ordering(function (d) {
             return -d.value;
@@ -231,80 +315,135 @@ function loadData(err, geodata, data, districts) {
         .xAxis()
         .ticks(5);
 
-    sectorChart.width(1200)
+    sectorChart.width(700)
         .height(350)
         .margins({top: 10, right: 50, bottom: 35, left: 60})
         .dimension(sector)
         .group(count_by_sector)
         .transitionDuration(500)
         .centerBar(false)
-        .gap(65)
+        .gap(10)
         .colors("#026CB6")
-        .x(d3.scale.ordinal().domain(sector.group().all().map(function (d) {
-            return d.key
-        })))
+        .x(d3.scale.ordinal())
+        // .x(d3.scale.ordinal().domain(sector.group().all().map(function (d) {
+        //     return d.key
+        // })))
         .xUnits(dc.units.ordinal)
         .elasticY(true)
         .xAxisLabel('Sectors')
-        .yAxisLabel('Interventions by Sector')
+        .yAxisLabel('Number of Projects')
         .on('filtered', function (chart, filter) {
 
         })
+
+
         .xAxis().tickFormat();
 
-    subsectorChart.width(1200)
+    subsectorChart
+    // .width(1200)
+    // .height(350)
+        .width(350)
         .height(350)
-        .margins({top: 10, right: 50, bottom: 35, left: 60})
+        .margins({top: 10, right: 40, bottom: 35, left: 40})
+        // .margins({top: 10, right: 50, bottom: 35, left: 60})
         .dimension(other_subsector)
-        .group(count_by_other_subsector)
-        // .data(function (group) {
-        //
-        //     var result = group.all()
-        //
-        //
-        //     console.log(group.top(12));
-        //     console.log(group.all());
-        //     console.log(group.all().filter(function(d) {
-        //         return d.key !== null
-        //     }));
-        //
-        //     return result;
-        // })
-        .transitionDuration(500)
-        .centerBar(false)
-        .gap(45)
-        .colors("#026CB6")
-        .x(d3.scale.ordinal().domain(other_subsector.group().all().map(function (d) {
-            return d.key
-        })))
-        .xUnits(dc.units.ordinal)
-        .elasticY(true)
-        .xAxisLabel('Sectors')
-        .yAxisLabel('Interventions by Sector')
-        .on('filtered', function (chart, filter) {
+        .group(other_subsector.group())
+        .data(function (group) {
+            // console.log(group.top(25))
 
+            return group.top(25).filter(function (d) {
+                return d.key !== 'No subsector'
+            });
+            // return group.top(25);
         })
-        // .filter(function(d) { console.log(d.key); return d.key !== null; })
-        .xAxis().tickFormat();
+        .ordering(function (d) {
+            return -d.value;
+        })
+        .transitionDuration(500)
+        // .xAxisLabel('Provinces')
+        .gap(10)
+        .colors("#026CB6")
+        .elasticX(true)
+        .on('filtered', function (chart, filter) {
+        })
+        .xAxis()
+        .ticks(5)
+        .tickFormat(d3.format('.3s'));
+
+
+    // .data(function (group) {
+    //     return group.top(5);
+    // //
+    // //     var result = group.all()
+    // //
+    // //
+    // //     console.log(group.top(12));
+    // //     console.log(group.all());
+    // //     console.log(group.all().filter(function(d) {
+    // //         return d.key !== null
+    // //     }));
+    // //
+    // //     return group.all().filter(function(d) {
+    // //         return d.key !== 'No subsector'
+    // //     });
+    // })
+    // .ordering(function (d) {
+    //     return -d.value;
+    // })
+    // .transitionDuration(500)
+    // .centerBar(false)
+    // .gap(45)
+    // .colors("#026CB6")
+    // .x(d3.scale.ordinal().domain(other_subsector.group().all().map(function (d) {
+    //     return d.key
+    // })))
+    // .xUnits(dc.units.ordinal)
+    // .elasticY(true)
+    // .xAxisLabel('Sectors')
+    // .yAxisLabel('Number of Projects')
+    // .on('filtered', function (chart, filter) {
+    //
+    // })
+    // // .filter(function(d) { console.log(d.key); return d.key !== null; })
+    // .xAxis().tickFormat();
 
 
     statusChart
-        .width(600)
-        .height(600)
-        .slicesCap(4)
-        .innerRadius(100)
-        .externalLabels(30)
-        .externalRadiusPadding(50)
-        .drawPaths(true)
+        .width(350)
+        .height(180)
+        .margins({top: 10, right: 40, bottom: 35, left: 40})
         .dimension(status)
         .group(count_by_status)
-        .legend(dc.legend())
-        // workaround for #703: not enough data is accessible through .label() to display percentages
-        .on('pretransition', function (chart) {
-            chart.selectAll('text.pie-slice').text(function (d) {
-                return d.data.key + ' ' + dc.utils.printSingleValue((d.endAngle - d.startAngle) / (2 * Math.PI) * 100) + '%';
-            })
-        });
+        .ordering(function (d) {
+            return -d.value;
+        })
+        .transitionDuration(500)
+        .gap(10) // 65 = norm
+        .colors("#026CB6")
+        .x(d3.scale.ordinal())
+        .elasticX(true)
+        .on('filtered', function (chart, filter) {
+
+        })
+        .xAxis()
+        .ticks(5);
+
+    // .width(600)
+    // .height(600)
+    // .slicesCap(4)
+    // .innerRadius(100)
+    // .externalLabels(30)
+    // .externalRadiusPadding(50)
+    // .drawPaths(true)
+    // .dimension(status)
+    // .group(count_by_status)
+    // .legend(dc.legend())
+    // // workaround for #703: not enough data is accessible through .label() to display percentages
+    // .on('pretransition', function (chart) {
+    //     chart.selectAll('text.pie-slice').text(function (d) {
+    //         return d.data.key + ' ' + dc.utils.printSingleValue((d.endAngle - d.startAngle) / (2 * Math.PI) * 100) + '%';
+    //     })
+    // });
 
     // statusChart.on('pretransition', function (chart) {
     //     chart.selectAll('.dc-legend-item text')
@@ -351,7 +490,7 @@ function loadData(err, geodata, data, districts) {
         .attr("transform", "translate(20,20)");
 
     var legend = d3.legend.color()
-        .labelFormat(d3.format(",.0f"))
+        .labelFormat(d3.format("'.2f'"))
         // .labels(function (i, genLength, generatedLabels) {
         //     if (i === 0) {
         //         return generatedLabels[i]
@@ -366,10 +505,7 @@ function loadData(err, geodata, data, districts) {
     svg.select(".legendQuant")
         .call(legend);
 
-
     // fix interactions between map and oblast charts
-
-    var all = dc.chartRegistry.list();
 
     mapChart.onClick = function (datum, layerIndex) {
         var selectedRegion = mapChart.geoJsons()[layerIndex].keyAccessor(datum);
@@ -378,19 +514,37 @@ function loadData(err, geodata, data, districts) {
     };
 
     mapChart.hasFilter = function (filter) {
+
         var filters = provinceChart.filters();
+
         if (!filter) {
             return filters.length > 0
         }
+
         return filters.indexOf(filter) != -1
     };
 
-    $("#projects").on('click', function (e) {
-        mapChart.group(count_by_province).colors(colorscale);
-        legend.scale(colorscale);
+    function changeChoropleth(chart, group, colors) {
+        chart
+            .group(group)
+            // .valueAccessor(group)
+            .colors(colors);
+        legend.scale(colors);
         svg.select(".legendQuant")
             .call(legend);
+    }
 
+    function projects(d) {
+        return d.value.count;
+    }
+
+    function funding(d) {
+        return d.value.total;
+    }
+    $("#projects").on('click', function (e) {
+
+        changeChoropleth(mapChart, count_by_province, colorscale);
+        changeChoropleth(mapDistrictChart, count_by_district, colorscale);
         provinceChart.group(count_by_province);
         partnersChart.group(count_by_partner);
 
@@ -405,21 +559,15 @@ function loadData(err, geodata, data, districts) {
     });
 
     $("#funding").on('click', function (e) {
-        mapChart
-            .group(funding_by_province)
-            .colors(colorscale2);
-        legend.scale(colorscale2);
-        svg.select(".legendQuant")
-            .call(legend);
 
+        changeChoropleth(mapChart, funding_by_province, colorscale2);
+        changeChoropleth(mapDistrictChart, funding_by_district, colorscale2);
         provinceChart.group(funding_by_province);
         partnersChart.group(funding_by_partner);
-
         // partner.group()
         //     .reduceSum(function (d) {
         //         return d["planed_amount"];
         //     });
-
         sectorChart.group(funding_by_sector);
         statusChart.group(funding_by_status);
         dc.renderAll();
@@ -427,34 +575,13 @@ function loadData(err, geodata, data, districts) {
 
 
     $('#geolevel').on('change', function (e) {
-
         var geolevel = $(this).val();
-
         if (geolevel == 'province') {
-            mapChart.overlayGeoJson(
-                geodata.features
-                , "state"
-                , function (d) {
-                    return d.properties['pr_name2'];
-                }
-            )
-                .dimension(province)
-                .group(count_by_province);
-
-            dc.renderAll();
+            show('map', mapChart);
         } else {
-            mapChart.overlayGeoJson(
-                districts.features
-                , "state"
-                , function (d) {
-                    return d.properties['DName'];
-                }
-            )
-                .dimension(district)
-                .group(count_by_district);
-
-            dc.renderAll();
+            show('map-district', mapDistrictChart);
         }
+        $('#geolabel').html(geolevel);
     });
 
 

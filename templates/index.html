@@ -41,7 +41,7 @@
 
         .dc-chart g.row text {
             fill: #000;
-            text-shadow: 0px 0px 3px #fff;
+            text-shadow: -1px 0 1px #fff, 0 1px 1px #fff, 1px 0 1px #fff, 0 -1px 1px #fff;
         }
 
         .dc-chart g.state path {
@@ -51,6 +51,10 @@
         .dc-chart .selected path {
             stroke-width: 1;
             fill-opacity: 1;
+        }
+
+        .dc-chart rect.bar {
+            fill-opacity: .8;
         }
 
         {#        .dc-chart g.deselected path {#}
@@ -91,10 +95,11 @@
 </div>
 
 <div class="ui container">
+    {#    style="max-width: 1500px; margin: 0 auto"#}
 
 
     <div class="ui top attached tabular menu">
-        <div class="active item" data-tab="first" id="projects">Interventions</div>
+        <div class="active item" data-tab="first" id="projects">Projects</div>
         <div class="item" data-tab="second" id="funding">Funding</div>
     </div>
     <div class="ui bottom attached tab segment" data-tab="first">
@@ -109,22 +114,6 @@
     {#        <option value="">Skills</option>#}
     {#        <option value="angular">Angular</option>#}
     {#        <option value="css">CSS</option>#}
-    {#        <option value="design">Graphic Design</option>#}
-    {#        <option value="ember">Ember</option>#}
-    {#        <option value="html">HTML</option>#}
-    {#        <option value="ia">Information Architecture</option>#}
-    {#        <option value="javascript">Javascript</option>#}
-    {#        <option value="mech">Mechanical Engineering</option>#}
-    {#        <option value="meteor">Meteor</option>#}
-    {#        <option value="node">NodeJS</option>#}
-    {#        <option value="plumbing">Plumbing</option>#}
-    {#        <option value="python">Python</option>#}
-    {#        <option value="rails">Rails</option>#}
-    {#        <option value="react">React</option>#}
-    {#        <option value="repair">Kitchen Repair</option>#}
-    {#        <option value="ruby">Ruby</option>#}
-    {#        <option value="ui">UI Design</option>#}
-    {#        <option value="ux">User Experience</option>#}
     {#    </select>#}
 
     <div class="ui grid">
@@ -137,8 +126,16 @@
                     <span class="filter-count"></span>
                 </div>
                 <div class="label">
-                    interventions
+                    projects
                 </div>
+            </div>
+            <div class="ui statistic left floated column">
+                <button class="ui button" id="download">
+                    Download Data
+                </button>
+                <button class="ui button" id="reset">
+                    Clear
+                </button>
             </div>
             <div class="ui statistic right floated column">
                 <div class="value">
@@ -149,43 +146,72 @@
                 </div>
             </div>
         </div>
-        <div class="large screen only row">
-            <div class="right floated right aligned six wide column">
-                <button class="ui button" id="download">
-                    Download Data
-                </button>
-                <button class="ui button" id="reset">
-                    Clear
-                </button>
-            </div>
-        </div>
-        <div class="large screen only row">
+
+{#        <div class="large screen only row">#}
+{#            <div class="right floated right aligned six wide column">#}
+{##}
+{#            </div>#}
+{#        </div>#}
+
+        <div class="row">
             <div class="ten wide column">
+
+                <h2 class="ui header">Map of projects by <span id="geolabel">province</span>s</h2>
                 <select name="admin-level" id="geolevel" class="ui fluid dropdown">
                     <option value="province">Province</option>
                     <option value="district">District</option>
                 </select>
-                <div id="map">
+                <div id="map"></div>
+                <div id="map-district" style="display: none"></div>
 
-                </div>
+
                 <svg id="legend"></svg>
 
             </div>
-            <div id="provinces" class="six wide column"></div>
+
+
+            <div class="six wide column">
+                <h2 class="ui header">Projects by provinces</h2>
+                <div id="provinces"></div>
+            </div>
+
         </div>
 
-        <div id="sector" class="one column large screen only row">
+        <div class="row">
+            <div class="ten wide column">
+                <h2 class="ui header">Projects by sector</h2>
+                <div id="sector"></div>
+            </div>
+            <div class="six wide column">
+                <h2 class="ui header">Projects by subsector</h2>
+                <div id="subsector"></div>
+            </div>
         </div>
 
-        <div id="subsector" class="one column large screen only row">
-        </div>
+        {#        <div class="one column row">#}
+        {##}
+        {#        </div>#}
+        {#        <div class="two column row">#}
+        {#            <div class="column">#}
+        {##}
+        {#            </div>#}
+        {#        </div>#}
+        <div class="two column row">
+            <div class="column">
+                <h2 class="ui header">Projects by implementing partners (TOP 25)</h2>
+                <div id="implementing_partners"></div>
+            </div>
+            <div class="ui four column grid">
+                <div class="row">
+                    <h2 class="ui header">Projects by partners</h2>
+                    <div id="partners"></div>
+                </div>
+                <div class="ui">
+                    <h2 class="ui header">Projects by status</h2>
+                    <div id="status"></div>
+                </div>
+            </div>
 
-        <div class="two column large screen only row">
-            <div id="partners" class="column"></div>
-            <div id="status" class="column"></div>
-        </div>
-        <div class="two column large screen only row">
-            <div id="implementing_partners" class="column"></div>
         </div>
 
 

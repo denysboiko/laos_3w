@@ -126,7 +126,8 @@ def import_sheet(request):
             request.FILES['file'].save_to_database(
                 # save_book_to_database
                 # save_to_database
-                model= ProjectByProvinces,
+                model= Project,
+                # ProjectByProvinces
                 # [ImplementingPartner, Subsector],
                 # initializers=[None, None],
                 mapdict=
@@ -138,33 +139,32 @@ def import_sheet(request):
                     #     'area',
                     #     'province_id'
                     # ]
-                [
-                    "project_id",
-                    "province_id",
-                    "district_id"
-                ]
                 # [
-                #     "project_code",
-                #     "project_title",
-                #     "year",
-                #     "start_date",
-                #     "end_date",
-                #     "planed_amount",
-                #     "status_id",
-                #     "sector_id",
-                #     "partner_id",
-                #     "other_subsector_id",
-                #     "responsible_id",
-                #     "implementing_partner_id"
+                #     "project_id",
+                #     "province_id",
+                #     "district_id"
                 # ]
-                    # [
-                    #     'id',
-                    #     'implementing_partner_name',
-                    # ]
-                    # [
-                    #     'id',
-                    #     'other_subsector_name',
-                    # ]
+                [
+
+                    "project_code",
+                    "partner_id",
+                    "project_title",
+                    "year",
+                    "start_date",
+                    "end_date",
+                    "status_id",
+                    "sector_id",
+                    "other_subsector_id",
+                    "planed_amount",
+                    "responsible_id",
+                    "implementing_partner_id"
+                ]
+                #     [
+                #         'implementing_partner_name',
+                #     ]
+                #     [
+                #         'other_subsector_name',
+                #     ]
 
             )
             return HttpResponse("OK")
