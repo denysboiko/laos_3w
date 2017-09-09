@@ -126,8 +126,8 @@ def import_sheet(request):
             request.FILES['file'].save_to_database(
                 # save_book_to_database
                 # save_to_database
-                model= Project,
-                # ProjectByProvinces
+                model= ProjectByProvinces,
+                # ProjectByProvinces,
                 # [ImplementingPartner, Subsector],
                 # initializers=[None, None],
                 mapdict=
@@ -139,29 +139,29 @@ def import_sheet(request):
                     #     'area',
                     #     'province_id'
                     # ]
-                # [
-                #     "project_id",
-                #     "province_id",
-                #     "district_id"
-                # ]
                 [
-
-                    "project_code",
-                    "partner_id",
-                    "project_title",
-                    "year",
-                    "start_date",
-                    "end_date",
-                    "status_id",
-                    "sector_id",
-                    "other_subsector_id",
-                    "planed_amount",
-                    "responsible_id",
-                    "implementing_partner_id"
+                    "project_id",
+                    "province_id",
+                    "district_id"
                 ]
-                #     [
-                #         'implementing_partner_name',
-                #     ]
+                # [
+                #
+                #     "project_code",
+                #     "partner_id",
+                #     "project_title",
+                #     "year",
+                #     "start_date",
+                #     "end_date",
+                #     "status_id",
+                #     "sector_id",
+                #     "other_subsector_id",
+                #     "planed_amount",
+                #     "responsible_id",
+                #     "implementing_partner_id"
+                # ]
+                    # [
+                    #     'implementing_partner_name',
+                    # ]
                 #     [
                 #         'other_subsector_name',
                 #     ]
