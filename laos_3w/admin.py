@@ -9,8 +9,9 @@ class MembershipInline(admin.TabularInline):
 class ProjectAdmin(admin.ModelAdmin):
 
     inlines = (MembershipInline,)
-    list_filter = ['sector', 'status']
+    list_filter = ['partner','sector', 'status']
     search_fields = ['project_title', ]
+    filter_horizontal = ('implementing_partner',)
     list_display = [
         'project_code',
         'project_title',

@@ -47,7 +47,7 @@ function loadData(err, geodata, data, districts) {
 
     var implementing_partner = cf.dimension(function (d) {
         return d['implementing_partner'] ? d['implementing_partner'] : 'No implementing partner';
-    });
+    }, true);
 
     var other_subsector = cf.dimension(function (d) {
         return d['other_subsector'] ? d['other_subsector'] : 'No subsector';
@@ -102,7 +102,7 @@ function loadData(err, geodata, data, districts) {
 
     var funding_by_implementing_partner = implementing_partner.group()
         .reduceSum(function (d) {
-            return Math.round(d['planed_amount']);
+            return Math.round(d['planed_amount'] / d.implementing_partner.length);
         });
 
 
@@ -633,10 +633,10 @@ function loadData(err, geodata, data, districts) {
 
         // mapDistrictChart.colors(returnScale(current_group));
 
-        // if (config.level === 'province') {
-        //
-        // }
-        updateLegend(returnScale(current_group), d3.format(".0f"))
+        if (config.level === 'province') {
+            updateLegend(returnScale(current_group), d3.format(".0f"))
+        }
+
     });
 
 
