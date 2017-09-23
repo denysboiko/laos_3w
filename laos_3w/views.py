@@ -20,24 +20,24 @@ class ProvinceViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = ProjectByProvinces.objects.all().select_related()
-    serializer_class = ProvinceAmountSerializer
-
-
-class ProjectViewSet2(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = Project.objects.all()
-    serializer_class = ProjectSerializer2
+    queryset = Province.objects.values('project','name').distinct()
+    serializer_class = ProvinceSerializer
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = ProjectByProvinces.objects.all()
+    queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+
+
+class ProjectViewSet2(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = ProjectByProvinces.objects.all()
+    serializer_class = ProjectSerializer2
 
 
 def Projects(request):
@@ -67,6 +67,7 @@ from django.http import JsonResponse
 
 
 def upload(request):
+
     if request.method == "POST":
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
@@ -74,12 +75,13 @@ def upload(request):
             return excel.make_response(filehandle.get_sheet(), "csv")
         else:
             return HttpResponseBadRequest()
+
     else:
         form = UploadFileForm()
+
     return render_to_response('upload.html',
                               {'form': form},
                               context_instance=RequestContext(request))
-
 
 def download(request):
     sheet = excel.pe.Sheet([[1, 2], [3, 4]])

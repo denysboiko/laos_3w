@@ -185,6 +185,9 @@ function loadData(err, geodata, data, districts) {
 
     }
 
+
+    console.log(province.group().all())
+
     mapDistrictChart
         .width(500)
         .height(600)
@@ -312,7 +315,7 @@ function loadData(err, geodata, data, districts) {
 
     partnersChart
         .width(350)
-        .height(180)
+        // .height(400)
         .margins({top: 10, right: 40, bottom: 35, left: 40})
         .dimension(partner)
         .group(partner.group())
@@ -320,7 +323,8 @@ function loadData(err, geodata, data, districts) {
             return -d.value;
         })
         .transitionDuration(500)
-        .gap(10) // 65 = norm
+        // .rowsHeight(30)
+        // .gap(10) // 65 = norm
         .colors("#026CB6")
         .x(d3.scale.ordinal())
         .elasticX(true)
@@ -477,7 +481,7 @@ function loadData(err, geodata, data, districts) {
 
     statusChart
         .width(350)
-        .height(180)
+        // .height(400)
         .margins({top: 10, right: 40, bottom: 35, left: 40})
         .dimension(status)
         .group(count_by_status)
@@ -485,7 +489,8 @@ function loadData(err, geodata, data, districts) {
             return -d.value;
         })
         .transitionDuration(500)
-        .gap(10) // 65 = norm
+        .rowsCap(25)
+        // .gap(5) // 65 = norm
         .colors("#026CB6")
         .x(d3.scale.ordinal())
         .elasticX(true)

@@ -6,32 +6,19 @@
 
     {% load staticfiles %}
 
-{#    <script src="{% static 'lib/d3.min.js' %}"></script>#}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+    <script src="{% static 'lib/d3.min.js' %}"></script>
     <script src="{% static 'lib/jquery-3.1.1.min.js' %}"></script>
     <script src="{% static 'lib/semantic/semantic.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'lib/semantic/semantic.min.css' %}">
     <script src="{% static 'lib/d3-scale-cluster.min.js' %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter2/1.4.1/crossfilter.min.js"></script>
-    {#    <script src=""></script>#}
-
-    {#    {% static 'lib/d3-legend.min.js' %}#}
-{#    <script src="{% static 'lib/dc.min.js' %}"></script>#}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.8/dc.min.js"></script>
-
-{#    http://cdnjs.cloudflare.com/ajax/libs/dc/1.7.5/dc.js#}
-{#http://cdnjs.cloudflare.com/ajax/libs/dc/1.7.5/dc.min.js#}
-{#http://cdnjs.cloudflare.com/ajax/libs/dc/1.7.5/dc.css#}
+    <script src="{% static 'lib/crossfilter.min.js' %}"></script>
     <script src="{% static 'lib/d3-queue.v3.min.js' %}"></script>
     <script src="{% static 'lib/d3-legend.min.js' %}"></script>
-{#    <script src="{% static 'lib/semantic/d3-legend.min.js' %}"></script>#}
-
-    {#    {% static 'lib/dc.min.js' %}#}
     <script src="{% static 'lib/FileSaver.min.js' %}"></script>
-    {#{% static 'lib/dc.min.css' %}#}
-{#    <link rel="stylesheet" href="{% static 'lib/dc.min.css' %}">#}
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.8/dc.min.css">
+    <script src="{% static 'lib/dc.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'lib/dc.min.css' %}">
+
     <style>
         #legend {
             position: absolute;
@@ -253,7 +240,7 @@
 
     d3.queue()
         .defer(d3.json, '{% static "data/laos.geojson" %}')
-        .defer(d3.json, "/projects2/")
+        .defer(d3.json, "/projects/")
         .defer(d3.json, '{% static "data/laos-districts.geojson" %}')
         // data/eu-projects.json
         // http://127.0.0.1:8000/static/data/eu-projects.json

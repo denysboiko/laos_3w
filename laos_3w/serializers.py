@@ -14,12 +14,22 @@ class ProvinceAmountSerializer(serializers.ModelSerializer):
 
 
 class ProvinceSerializer(serializers.ModelSerializer):
+
+    name = serializers.ReadOnlyField(source='province.name')
+
+    class Meta:
+        model = ProjectByProvinces
+        fields = ('name')
+
+
+
+class DistinctProvinceSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Province
         fields = '__all__'
 
-
-class ProjectSerializer2(serializers.ModelSerializer):
+class ProjectSerializer(serializers.ModelSerializer):
 
     project_title = models.CharField(max_length=80)
     planed_amount = models.FloatField()
@@ -55,9 +65,8 @@ class ProjectSerializer2(serializers.ModelSerializer):
         ]
 
 
+class ProjectSerializer2(serializers.ModelSerializer):
 
-
-class ProjectSerializer(serializers.ModelSerializer):
     project = serializers.ReadOnlyField(source='project.project_title')
     province = serializers.ReadOnlyField(source='province.name')
     partner = serializers.ReadOnlyField(source='project.partner.partner_name')
