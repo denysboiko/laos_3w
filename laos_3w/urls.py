@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^$', home),
     url(r'^upload/', import_sheet),
     url(r'^admin/', admin.site.urls),
-
+    url(r'^', include('smart_selects.urls')),
     # url(r'^projects/', Projects),
     url(r'^', include(router.urls))
 

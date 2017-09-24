@@ -26,7 +26,12 @@ function loadData(err, geodata, data, districts) {
     var cf = crossfilter(data.results);
 
     var province = cf.dimension(function (d) {
-        return d['province'];
+        // console.log();
+
+        // return d['province'];
+        return d['locations'].map(function (d) {
+            return d.province
+        })
     }, true);
 
     var district = cf.dimension(function (d) {
@@ -63,7 +68,7 @@ function loadData(err, geodata, data, districts) {
 
     var funding_by_province = province.group()
         .reduceSum(function (d) {
-            return Math.round(d["planed_amount"] / d.province.length);
+            return Math.round(d["planed_amount"] / d.locations.length);
         });
 
     var count_by_district = district.group()
@@ -178,7 +183,7 @@ function loadData(err, geodata, data, districts) {
 
 
         }
-        console.log(colors)
+
         return d3.scaleCluster()
             .domain(breaks)
             .range(colors)
@@ -186,7 +191,7 @@ function loadData(err, geodata, data, districts) {
     }
 
 
-    console.log(province.group().all())
+    // console.log(province.group().all())
 
     mapDistrictChart
         .width(500)
@@ -550,6 +555,17 @@ function loadData(err, geodata, data, districts) {
         .group(total_funding);
     // .formatNumber(d3.format(",.0f"));
 
+
+    dc.numberDisplay("#funding-province")
+        .valueAccessor(function (d) {
+            return Math.round(d.value);
+        })
+        .group(province.group()
+            .reduceSum(function (d) {
+                return Math.round(d["planed_amount"] / d.province.length);
+            }));
+
+
     dc.renderAll();
 
 
@@ -733,6 +749,7 @@ function loadData(err, geodata, data, districts) {
     function downloadData() {
 
         var header = [
+            'id',
             'project_title',
             'status',
             'sector',

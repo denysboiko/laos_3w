@@ -36,7 +36,7 @@ class ProjectViewSet2(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = ProjectByProvinces.objects.all()
+    queryset = ProjectByProvinces.objects.values('province__name').distinct()
     serializer_class = ProjectSerializer2
 
 

@@ -1,5 +1,5 @@
 from django.db import models
-
+from smart_selects.db_fields import ChainedManyToManyField
 
 class Status(models.Model):
 
@@ -123,6 +123,11 @@ class Project(models.Model):
     # implementing_partner = models.ForeignKey(ImplementingPartner, blank=True, null=True)
     sector = models.ForeignKey(Sector, related_name='sector_id')
     other_subsector = models.ForeignKey(Subsector, blank=True, null=True)
+
+    # planned if start_date > today
+    # closed if end_date < today
+    # ongoing - everything else
+
     status = models.ForeignKey(Status, related_name='status_id')
     responsible = models.ForeignKey(Responsible, related_name='responsible_id', blank=True, null=True)
     province = models.ManyToManyField(Province, through='ProjectByProvinces')
@@ -133,3 +138,19 @@ class Project(models.Model):
 
     class Meta:
         db_table = 'projects'
+
+
+class Location(models.Model):
+
+    project = models.ForeignKey(Project, blank=True, null=True, related_name='locations')
+    province = models.ForeignKey(Province)
+    districts = ChainedManyToManyField(
+        District,
+        # horizontal=True,
+        verbose_name='districts',
+        chained_field="province",
+        chained_model_field="province",
+        related_name='districs')
+
+    class Meta:
+        db_table = 'location'

@@ -15,12 +15,13 @@ class ProvinceAmountSerializer(serializers.ModelSerializer):
 
 class ProvinceSerializer(serializers.ModelSerializer):
 
-    name = serializers.ReadOnlyField(source='province.name')
+    province = serializers.ReadOnlyField(source='name')
+    # district = serializers.ReadOnlyField()
 
     class Meta:
         model = ProjectByProvinces
-        fields = ('name')
-
+        fields = ('province',)
+# ,'district'
 
 
 class DistinctProvinceSerializer(serializers.ModelSerializer):
@@ -29,8 +30,20 @@ class DistinctProvinceSerializer(serializers.ModelSerializer):
         model = Province
         fields = '__all__'
 
+
+class LocationSerializer(serializers.ModelSerializer):
+
+    province = serializers.StringRelatedField()
+    districts = serializers.StringRelatedField(many  = True)
+
+    class Meta:
+        model = Location
+        fields = ('province', 'districts')
+        # , 'districts'
+
 class ProjectSerializer(serializers.ModelSerializer):
 
+    id = serializers.ReadOnlyField()
     project_title = models.CharField(max_length=80)
     planed_amount = models.FloatField()
     partner = serializers.StringRelatedField()
@@ -46,12 +59,17 @@ class ProjectSerializer(serializers.ModelSerializer):
         slug_field='name_l',
         source='province'
      )
+
+    locations = LocationSerializer(many=True)
+
+
     district = serializers.StringRelatedField(many=True)
         # ProvinceAmountSerializer(many=True, source='project_by_provinces_set')
 
     class Meta:
         model = Project
         fields = [
+            'id',
             'project_title',
             'status',
             'implementing_partner',
@@ -61,7 +79,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             'other_subsector',
             'province',
             'province_l',
-            'district'
+            'district',
+            'locations'
         ]
 
 

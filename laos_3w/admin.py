@@ -6,9 +6,13 @@ class MembershipInline(admin.TabularInline):
     model = ProjectByProvinces
     extra = 1
 
+class LocationInline(admin.TabularInline):
+    model = Location
+    extra = 1
+
 class ProjectAdmin(admin.ModelAdmin):
 
-    inlines = (MembershipInline,)
+    inlines = (LocationInline, MembershipInline,)
     list_filter = ['partner','sector', 'status']
     search_fields = ['project_title', ]
     filter_horizontal = ('implementing_partner',)
@@ -23,4 +27,4 @@ class ProjectAdmin(admin.ModelAdmin):
 admin.site.register(Project, ProjectAdmin)
 
 
-admin.site.register([Status, Province, Sector, Partner, District, ImplementingPartner, Subsector])
+admin.site.register([Status, Province, Sector, Partner, District, ImplementingPartner, Subsector, Location])
