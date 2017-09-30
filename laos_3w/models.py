@@ -34,7 +34,7 @@ class District(models.Model):
     name = models.CharField(max_length=120)
     name_l = models.CharField(max_length=120)
     area = models.FloatField()
-    province = models.ForeignKey(Province)
+    province = models.ForeignKey(Province, related_name='districts')
 
     def __unicode__(self):
         return self.name
