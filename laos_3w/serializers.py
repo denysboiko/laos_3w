@@ -28,7 +28,8 @@ class DistinctSerializer(serializers.ModelSerializer):
 class ProvinceSerializer(serializers.ModelSerializer):
 
     name = serializers.ReadOnlyField()
-    districts = serializers.StringRelatedField(many=True)
+    districts = DistinctSerializer(many=True)
+        # serializers.StringRelatedField(many=True)
         # DistinctSerializer(many=True)
 
     class Meta:
@@ -70,6 +71,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     locations = LocationSerializer(many=True)
 
     district = serializers.StringRelatedField(many=True)
+        # DistinctSerializer(maSny=True)
         # ProvinceAmountSerializer(many=True, source='project_by_provinces_set')
 
     class Meta:

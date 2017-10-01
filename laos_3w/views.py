@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import *
 from rest_framework import viewsets
+from rest_framework.permissions import AllowAny
 from .serializers import *
 
 import json
@@ -20,6 +21,7 @@ class ProvinceViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
+    permission_classes = (AllowAny,)
     queryset = Province.objects.all()
     serializer_class = ProvinceSerializer
 
@@ -28,6 +30,7 @@ class DistrictViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
+    permission_classes = (AllowAny,)
     queryset = District.objects.all()
     serializer_class = DistinctSerializer
 
@@ -36,6 +39,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
+    permission_classes = (AllowAny,)
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
 
@@ -44,6 +48,7 @@ class ProjectViewSet2(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
+    permission_classes = (AllowAny,)
     queryset = ProjectByProvinces.objects.values('province__name').distinct()
     serializer_class = ProjectSerializer2
 
@@ -53,8 +58,8 @@ def Projects(request):
     API endpoint that allows users to be viewed or edited.
     """
 
+    permission_classes = (AllowAny,)
     queryset = Project.objects.all().values()
-
     serializer = ProjectSerializer(queryset)
     print (queryset)
     return JsonResponse({'data': list(queryset)})

@@ -66,13 +66,14 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
 
     var district = cf.dimension(function (d) {
 
-        var rd = mergeArrays(d['locations'].map(function (d) {
-            return d.districts
-        }));
-
+        // var rd = mergeArrays(d['locations'].map(function (d) {
+        //     return d.districts
+        // }));
         // d['districts']
         // console.log([].concat([[1, 2], [3, 4]]))
+
         return d['district'] ? d['district'] : 'No district';
+
     }, true);
 
     var sector = cf.dimension(function (d) {
@@ -234,13 +235,16 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
         .width(500)
         .height(600)
         .dimension(district)
+        .keyAccessor(function (d) {
+            return d.dcode;
+        })
         .group(count_by_district)
         .colors(returnScale(count_by_district))
         .overlayGeoJson(
             districts.features
             , "state"
             , function (d) {
-                return d.properties['DName'];
+                return d.properties['DCode']+"";
             }
         )
         .title(function (p) {
@@ -699,6 +703,8 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
         var selectedRegion = datum.key;
         provinceChart.filter(selectedRegion);
         if (config.level == 'district') {
+
+
             provincesDict[selectedRegion].forEach(function (e, i) {
                 districtChart.filter(e);
             });
