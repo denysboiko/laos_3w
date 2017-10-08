@@ -72,6 +72,13 @@
             width: 100% !important;
         }
 
+        #admin-level-switcher {
+            width: 200px;
+            position: absolute;
+            top: 50px;
+            right: 0px;
+        }
+
     </style>
 
 </head>
@@ -178,10 +185,14 @@
             <div class="ten wide column">
 
                 <h2 class="ui header">Map of projects by <span id="geolabel">province</span>s</h2>
-                <select name="admin-level" id="geolevel" class="ui fluid dropdown">
-                    <option value="province">Province</option>
-                    <option value="district">District</option>
-                </select>
+
+                <div id="admin-level-switcher">
+                    <select name="admin-level" id="geolevel" class="ui fluid dropdown">
+                        <option value="province">Province</option>
+                        <option value="district">District</option>
+                    </select>
+                </div>
+
                 <div id="map"></div>
                 <div id="map-district" style="display: none"></div>
 
@@ -209,14 +220,6 @@
             </div>
         </div>
 
-        {#        <div class="one column row">#}
-        {##}
-        {#        </div>#}
-        {#        <div class="two column row">#}
-        {#            <div class="column">#}
-        {##}
-        {#            </div>#}
-        {#        </div>#}
         <div class="two column row">
             <div class="column">
                 <h2 class="ui header">Projects by implementing partners (TOP 25)</h2>
@@ -231,8 +234,7 @@
                     <h2 class="ui header">Projects by status</h2>
                     <div id="status"></div>
                 </div>
-                <div class="ui" id ="districts">
-
+                <div class="ui" id ="districts" style="display: block">
                 </div>
             </div>
 
@@ -259,16 +261,12 @@
 <script src="{% static 'js/charts.js' %}"></script>
 <script>
 
-    {#    Что за хуйня, почему {% static %} не работает? #}
-
     d3.queue()
         .defer(d3.json, '{% static "data/laos.geojson" %}')
         .defer(d3.json, "/projects/")
         .defer(d3.json, "/districts/")
         .defer(d3.json, "/provinces/")
         .defer(d3.json, '{% static "data/laos-districts.geojson" %}')
-        // data/eu-projects.json
-        // http://127.0.0.1:8000/static/data/eu-projects.json
         .await(loadData);
 
     function ResetAll() {

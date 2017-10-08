@@ -1,5 +1,6 @@
 from django.db import models
 from smart_selects.db_fields import ChainedManyToManyField
+import datetime
 
 class Status(models.Model):
 
@@ -135,6 +136,20 @@ class Project(models.Model):
 
     def __unicode__(self):
         return self.project_title
+
+    def status_code(self):
+
+
+        print(datetime.datetime.today());
+        print(self.start_date);
+        print(self.pk);
+
+        if self.start_date > datetime.datetime.today().date():
+            return 'Planned'
+        elif self.end_date < datetime.datetime.today().date():
+            return 'Closed'
+        else:
+            return 'Ongoing'
 
     class Meta:
         db_table = 'projects'

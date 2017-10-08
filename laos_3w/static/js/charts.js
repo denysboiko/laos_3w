@@ -8,28 +8,71 @@ var mapChart = dc.geoChoroplethChart("#map"),
     subsectorChart = dc.rowChart("#subsector"),
     statusChart = dc.rowChart("#status");
 
+
+function wrap(text, width) {
+    text.each(function () {
+        var text = d3.select(this),
+            tspans = text.selectAll('tspan'),
+            words = [];
+
+        if (tspans[0].length > 0) {
+            tss = [];
+            tspans[0].map(function (d) {
+                tss = tss.concat(d3.select(d).text().split(/\s+/));
+            }).reverse();
+
+            words = tss.reverse();
+        } else {
+            words = text.text().split(/\s+/).reverse();
+        }
+
+
+        var word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.1, // ems
+            y = text.attr("y"),
+            dy = parseFloat(text.attr("dy")),
+            tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+
+
+        while (word = words.pop()) {
+            line.push(word);
+
+
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                // console.log(line)
+                tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(line.join(" "));
+            }
+        }
+    });
+}
+
+
 function loadData(err, geodata, data, districts_list, provinces_list, districts) {
 
-    var districtsDict = {}
-    var provincesDict = {}
-    var f = d3.format(",.0f")
+    var districtsDict = {};
+    var provincesDict = {};
+    var f = d3.format(",.0f");
 
 
     districts_list.results.forEach(function (e, i, arr) {
-
-        districtsDict[e.name] = e.province
-
+        districtsDict[e.dcode] = e.province
+        // dcode
     });
-
 
     provinces_list.results.forEach(function (e, i, arr) {
-
         provincesDict[e.name] = e.districts
-
     });
 
 
-    console.log(provincesDict)
+    // console.log(districtsDict);
+    // console.log(provincesDict);
+
     var config = {
         level: 'province',
         measure: 'count'
@@ -42,9 +85,6 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
     var cf = crossfilter(data.results);
 
     var province = cf.dimension(function (d) {
-        // console.log();
-
-        // return d['province'];
         return d['locations'].map(function (d) {
             return d.province
         })
@@ -70,10 +110,17 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
             return d.districts
         }));
 
-        // d['districts']
+        // d['district']
         // console.log([].concat([[1, 2], [3, 4]]))
-        return d['district'] ? d['district'] : 'No district';
+
+        var districts = d['district'].map(function(d) {
+            return d['dcode'];
+        });
+
+        return districts ? districts : 'No district';
     }, true);
+
+    // console.log(district.group().all())
 
     var sector = cf.dimension(function (d) {
         return d['sector'];
@@ -96,7 +143,6 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
     });
 
     // Groups for Dimensions
-
 
     var count_by_province = province.group()
         .reduceCount(function (d) {
@@ -191,7 +237,7 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
         .reduce(reduceAdd, reduceRemove, reduceInitial);
 
 
-    var projection = d3.geo.mercator().center([108, 19]).scale(3100);
+    var projection = d3.geo.mercator().center([106, 19]).scale(3600);
 
     function returnScale(group) {
 
@@ -231,7 +277,7 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
     // console.log(province.group().all())
 
     mapDistrictChart
-        .width(500)
+        .width(700)
         .height(600)
         .dimension(district)
         .group(count_by_district)
@@ -240,7 +286,7 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
             districts.features
             , "state"
             , function (d) {
-                return d.properties['DName'];
+                return d.properties['DCode'].toString(); // Code
             }
         )
         .title(function (p) {
@@ -254,7 +300,7 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
 
 
     mapChart
-        .width(500)
+        .width(700)
         .height(600)
         .dimension(province)
         .group(province.group())
@@ -310,6 +356,9 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
         .gap(10)
         .colors("#026CB6")
         .elasticX(true)
+        .title(function (p) {
+            return p.key + ': ' + f(p.value);
+        })
         .on('filtered', function (chart, filter) {
 
             chart.filters();
@@ -319,7 +368,8 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
             // }
         })
         .xAxis()
-        .ticks(5);
+        .ticks(5)
+        .tickFormat(d3.format('.3s'));
 
 
     districtChart
@@ -344,16 +394,12 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
             //     mapChart.filter(['Bualapha District'])
             // }
         })
+        .title(function (p) {
+            return p.key + ': ' + f(p.value);
+        })
         .xAxis()
         .ticks(5);
 
-    // 65 = norm
-    // .centerBar(false)
-    // .xAxisLabel('Provinces')
-    // .yAxisLabel('# of ??? by province')
-    // .x(d3.scale.ordinal().domain(provincetList))
-    // .xUnits(dc.units.ordinal)
-    // .tickFormat();
 
     impPartnersChart
         .width(500)
@@ -379,8 +425,12 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
         .elasticX(true)
         .on('filtered', function (chart, filter) {
         })
+        .title(function (p) {
+            return p.key + ': ' + f(p.value);
+        })
         .xAxis()
-        .ticks(5);
+        .ticks(5)
+        .tickFormat(d3.format('.3s'));
 
 
     partnersChart
@@ -393,109 +443,64 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
             return -d.value;
         })
         .transitionDuration(500)
-        // .rowsHeight(30)
-        // .gap(10) // 65 = norm
         .colors("#026CB6")
         .x(d3.scale.ordinal())
         .elasticX(true)
         .on('filtered', function (chart, filter) {
 
         })
+        .title(function (p) {
+            return p.key + ': ' + f(p.value);
+        })
         .xAxis()
-        .ticks(5);
+        .ticks(5)
+        .tickFormat(d3.format('.3s'));
 
-    function wrap(text, width) {
-        text.each(function () {
-            var text = d3.select(this),
-                tspans = text.selectAll('tspan'),
-                words = [];
-
-            if (tspans[0].length > 0) {
-                tss = [];
-                tspans[0].map(function (d) {
-                    tss = tss.concat(d3.select(d).text().split(/\s+/));
-                }).reverse();
-
-                words = tss.reverse();
-            } else {
-                words = text.text().split(/\s+/).reverse();
-            }
-
-
-            var word,
-                line = [],
-                lineNumber = 0,
-                lineHeight = 1.1, // ems
-                y = text.attr("y"),
-                dy = parseFloat(text.attr("dy")),
-                tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
-
-
-            while (word = words.pop()) {
-                line.push(word);
-
-
-                tspan.text(line.join(" "));
-                if (tspan.node().getComputedTextLength() > width) {
-                    line.pop();
-                    tspan.text(line.join(" "));
-                    line = [word];
-                    // console.log(line)
-                    tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(line.join(" "));
-                }
-            }
-        });
-    }
 
     sectorChart.width(700)
         .height(350)
-        .margins({top: 10, right: 50, bottom: 60, left: 60})
+        .margins({top: 10, right: 10, bottom: 60, left: 50})
         .dimension(sector)
         .group(count_by_sector)
         .ordering(function (d) {
             return d.key === 'Other' ? 999 : 1;
         })
+        .colors("#026CB6")
+        .gap(10)
         .transitionDuration(500)
         .centerBar(false)
-        .gap(10)
-        .colors("#026CB6")
-        // .x(d3.scale.ordinal().domain(sector.group().all().map(function (d) {
-        //     return d.key
-        // })))
-        .xUnits(dc.units.ordinal)
-        .elasticY(true)
-        // .xAxisLabel('Sectors')
-        .yAxisLabel('Number of Projects')
         .on('filtered', function (chart, filter) {
 
         })
+        .title(function (p) {
+            return p.key + ': ' + f(p.value);
+        })
         .x(d3.scale.ordinal())
         .xUnits(dc.units.ordinal)
-        .xAxis()
-        .tickFormat();
+        .elasticY(true)
+        .yAxisLabel('Number of Projects')
+        .yAxis()
+        .tickFormat(d3.format('.3s'));
 
     sectorChart.on('renderlet', function (chart) {
         chart.selectAll(".x text")
             .call(wrap, 60);
     });
 
+    var subsector_height = (other_subsector.group().all().length) * (20 + 10) + 25
 
     subsectorChart
-    // .width(1200)
-    // .height(350)
         .width(350)
-        .height(350)
+        .height(subsector_height)
+        .fixedBarHeight(20)
         .margins({top: 10, right: 40, bottom: 35, left: 40})
-        // .margins({top: 10, right: 50, bottom: 35, left: 60})
         .dimension(other_subsector)
         .group(other_subsector.group())
         .data(function (group) {
-            // console.log(group.top(25))
-
+            // TODO: REPLACE TO ALL OR TOP(INFINITY)
             return group.top(25).filter(function (d) {
                 return d.key !== 'No subsector'
             });
-            // return group.top(25);
         })
         .ordering(function (d) {
             return -d.value;
@@ -505,48 +510,14 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
         .gap(10)
         .colors("#026CB6")
         .elasticX(true)
+        .title(function (p) {
+            return p.key + ': ' + f(p.value);
+        })
         .on('filtered', function (chart, filter) {
         })
         .xAxis()
         .ticks(5)
-        .tickFormat(d3.format('.0f'));
-
-
-    // .data(function (group) {
-    //     return group.top(5);
-    // //
-    // //     var result = group.all()
-    // //
-    // //
-    // //     console.log(group.top(12));
-    // //     console.log(group.all());
-    // //     console.log(group.all().filter(function(d) {
-    // //         return d.key !== null
-    // //     }));
-    // //
-    // //     return group.all().filter(function(d) {
-    // //         return d.key !== 'No subsector'
-    // //     });
-    // })
-    // .ordering(function (d) {
-    //     return -d.value;
-    // })
-    // .transitionDuration(500)
-    // .centerBar(false)
-    // .gap(45)
-    // .colors("#026CB6")
-    // .x(d3.scale.ordinal().domain(other_subsector.group().all().map(function (d) {
-    //     return d.key
-    // })))
-    // .xUnits(dc.units.ordinal)
-    // .elasticY(true)
-    // .xAxisLabel('Sectors')
-    // .yAxisLabel('Number of Projects')
-    // .on('filtered', function (chart, filter) {
-    //
-    // })
-    // // .filter(function(d) { console.log(d.key); return d.key !== null; })
-    // .xAxis().tickFormat();
+        .tickFormat(d3.format('.3s'));
 
 
     statusChart
@@ -559,48 +530,20 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
             return -d.value;
         })
         .transitionDuration(500)
-        .rowsCap(25)
         // .gap(5) // 65 = norm
         .colors("#026CB6")
+        .title(function (p) {
+            return p.key + ': ' + f(p.value);
+        })
         .x(d3.scale.ordinal())
         .elasticX(true)
         .on('filtered', function (chart, filter) {
 
         })
         .xAxis()
-        .ticks(5);
+        .ticks(5)
+        .tickFormat(d3.format('.3s'));
 
-    // .width(600)
-    // .height(600)
-    // .slicesCap(4)
-    // .innerRadius(100)
-    // .externalLabels(30)
-    // .externalRadiusPadding(50)
-    // .drawPaths(true)
-    // .dimension(status)
-    // .group(count_by_status)
-    // .legend(dc.legend())
-    // // workaround for #703: not enough data is accessible through .label() to display percentages
-    // .on('pretransition', function (chart) {
-    //     chart.selectAll('text.pie-slice').text(function (d) {
-    //         return d.data.key + ' ' + dc.utils.printSingleValue((d.endAngle - d.startAngle) / (2 * Math.PI) * 100) + '%';
-    //     })
-    // });
-
-    // statusChart.on('pretransition', function (chart) {
-    //     chart.selectAll('.dc-legend-item text')
-    //         .text('')
-    //         .append('tspan')
-    //         .text(function (d) {
-    //             return d.name;
-    //         })
-    //         .append('tspan')
-    //         .attr('x', 100)
-    //         .attr('text-anchor', 'end')
-    //         .text(function (d) {
-    //             return d.data;
-    //         });
-    // });
 
     var all = cf.groupAll();
 
@@ -618,17 +561,13 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
             return Math.round(d);
         })
         .group(total_funding);
-    // .formatNumber(d3.format(",.0f"));
 
 
     dc.numberDisplay("#funding-province")
         .valueAccessor(function (d) {
             return Math.round(d.value);
         })
-        .group(province.group()
-            .reduceSum(function (d) {
-                return Math.round(d["planed_amount"] / d.locations.length);
-            }));
+        .group(funding_by_province);
 
 
     dc.renderAll();
@@ -663,7 +602,6 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
             .call(clearLabel)
     }
 
-
     updateLegend(returnScale(count_by_province), f);
 
 
@@ -680,29 +618,36 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
     mapDistrictChart.onClick = function (datum, layerIndex) {
         var selectedRegion = mapDistrictChart.geoJsons()[layerIndex].keyAccessor(datum);
         var filters = provinceChart.filters();
-
         districtFilters.push(selectedRegion);
-
-        console.log(filters.indexOf(selectedRegion))
         if (filters.indexOf(districtsDict[selectedRegion]) == -1) {
             provinceChart.filter(districtsDict[selectedRegion]);
         }
-
         districtChart.filter(selectedRegion);
-        mapDistrictChart.redrawGroup()
+        mapDistrictChart.redrawGroup();
+        // console.log(mapDistrictChart.filters());
     };
 
 
     provinceChart.onClick = function (datum) {
 
-
         var selectedRegion = datum.key;
+
+        // console.log(selectedRegion)
+
         provinceChart.filter(selectedRegion);
+
         if (config.level == 'district') {
+
+            // console.log(provincesDict[selectedRegion])
+
             provincesDict[selectedRegion].forEach(function (e, i) {
                 districtChart.filter(e);
             });
+
+            // console.log(mapDistrictChart.filters());
         }
+
+
 
 
         provinceChart.redrawGroup()
@@ -712,7 +657,6 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
 
     mapChart.hasFilter = function (filter) {
         var filters = provinceChart.filters();
-        // console.log(filters)
 
         if (!filter) {
             return filters.length > 0
@@ -744,10 +688,14 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
         if (!filter) {
             return filters.length > 0
         }
-        // else {
-        //     console.log(filters)
-        // }
+        else {
+            // console.log(filter)
 
+
+            console.log(filters)
+        }
+
+        x = parseInt(filter)
         return filters.indexOf(filter) != -1
 
     };
@@ -765,15 +713,15 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
             }
         };
 
-        var current_group = groups['province'][config.measure];
+        var current_group = [
+            groups['province'][config.measure],
+            groups['district'][config.measure]
+        ];
 
-        mapChart.colors(returnScale(current_group));
+        mapChart.colors(returnScale(current_group[0]));
+        mapDistrictChart.colors(returnScale(current_group[1]));
+        updateLegend(returnScale(groups[config.level][config.measure]), d3.format(",.0f"));
 
-        // mapDistrictChart.colors(returnScale(current_group));
-
-        if (config.level === 'province') {
-            updateLegend(returnScale(current_group), d3.format(",.0f"))
-        }
 
     });
 
@@ -838,7 +786,6 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
         document.getElementById('map').style.display = 'none';
         document.getElementById('map-district').style.display = 'none';
         document.getElementById(container).style.display = 'block';
-
         updateLegend(chart.colors(), f);
         chart.render();
     }
@@ -860,6 +807,8 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
 
     function downloadData() {
 
+        console.log(partner.top(Infinity));
+
         var header = [
             'id',
             'project_title',
@@ -879,7 +828,6 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
 
                 })
             });
-
 
         data.unshift(header);
         var result = d3.csv.formatRows(data);
