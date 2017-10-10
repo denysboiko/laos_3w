@@ -86,6 +86,7 @@
 
 
 <div class="ui secondary pointing menu">
+
     <div class="ui container">
         <a class="item" href="/">Home</a>
         <a class="item" href="/upload">Upload</a>
@@ -164,14 +165,14 @@
                     funding
                 </div>
             </div>
-            <div class="ui statistic right floated column">
-                <div class="value">
-                    <span class="filter-funding" id="funding-province"></span>
-                </div>
-                <div class="label">
-                    for selected provinces
-                </div>
-            </div>
+{#            <div class="ui statistic right floated column">#}
+{#                <div class="value">#}
+{#                    <span class="filter-funding" id="funding-province"></span>#}
+{#                </div>#}
+{#                <div class="label">#}
+{#                    for selected provinces#}
+{#                </div>#}
+{#            </div>#}
 
         </div>
 
@@ -220,12 +221,12 @@
             </div>
         </div>
 
-        <div class="two column row">
-            <div class="column">
+        <div class="row">
+            <div class="ten wide column">
                 <h2 class="ui header">Projects by implementing partners (TOP 25)</h2>
                 <div id="implementing_partners"></div>
             </div>
-            <div class="ui four column grid">
+            <div class="six wide column">
                 <div class="cleanrow">
                     <h2 class="ui header">Projects by partners</h2>
                     <div id="partners"></div>
@@ -234,7 +235,7 @@
                     <h2 class="ui header">Projects by status</h2>
                     <div id="status"></div>
                 </div>
-                <div class="ui" id ="districts" style="display: block">
+                <div class="ui" id ="districts" style="display: none">
                 </div>
             </div>
 
