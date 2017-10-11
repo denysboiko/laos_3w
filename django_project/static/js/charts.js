@@ -787,6 +787,7 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
 
         var header = [
             'id',
+            'project_code',
             'project_title',
             'status',
             'sector',
@@ -800,6 +801,7 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
             .map(function (record) {
                 return [
                     record['id'],
+                    record['project_code'],
                     record['project_title'],
                     record['status'],
                     record['sector'],
@@ -809,7 +811,7 @@ function loadData(err, geodata, data, districts_list, provinces_list, districts)
                         return d.province
                     }).join('; '),
                     record['districts'].map(function (d) {
-                        return d.name
+                        return districtsNames[d]
                     }).join('; ')
 
                 ];

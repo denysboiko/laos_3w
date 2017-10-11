@@ -137,7 +137,9 @@ class Location(models.Model):
         verbose_name='districts',
         chained_field="province",
         chained_model_field="province",
-        related_name='districs')
+        related_name='districs',
+        blank=True
+    )
 
     class Meta:
         db_table = 'location'

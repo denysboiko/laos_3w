@@ -43,6 +43,7 @@ class LocationSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
 
     id = serializers.ReadOnlyField()
+    project_code = serializers.ReadOnlyField()
     project_title = models.CharField(max_length=80)
     planed_amount = models.FloatField()
     partner = serializers.StringRelatedField()
@@ -74,6 +75,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = [
             'id',
+            'project_code',
             'project_title',
             'status',
             'implementing_partner',
