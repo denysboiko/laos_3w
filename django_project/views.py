@@ -128,46 +128,49 @@ def import_sheet(request):
     if request.method == "POST":
         form = UploadFileForm(request.POST,
                               request.FILES)
-        if form.is_valid():
-            request.FILES['file'].save_to_database(
-                # save_book_to_database
-                # save_to_database
-                model= Project,
-                # ProjectByProvinces,
-                # [ImplementingPartner, Subsector],
-                # initializers=[None, None],
-                mapdict=
-                    # [
-                    #     'id',
-                    #     'dcode',
-                    #     'name',
-                    #     'name_l',
-                    #     'area',
-                    #     'province_id'
-                    # ]
-                # [
-                #     "project_id",
-                #     "province_id",
-                #     "district_id"
-                # ]
-                [
-                    "project_code",
-                    "partner_id",
-                    "project_title",
-                    "start_date",
-                    "end_date",
-                    "sector_id",
-                    "other_subsector_id",
-                    "planed_amount"
-                ]
-                    # [
-                    #     'implementing_partner_name',
-                    # ]
-                #     [
-                #         'other_subsector_name',
-                #     ]
+        request.FILES['file'].save_to_database(
+            # save_book_to_database
+            # save_to_database
+            model= Location,
+            # ProjectByProvinces,
+            # [ImplementingPartner, Subsector],
+            # initializers=[None, None],
+            mapdict=[
+                'project_id',
+                'province_id'
+            ]
+            # [
+            #     'id',
+            #     'dcode',
+            #     'name',
+            #     'name_l',
+            #     'area',
+            #     'province_id'
+            # ]
+            # [
+            #     "project_code",
+            #     "partner_id",
+            #     "project_title",
+            #     "start_date",
+            #     "end_date",
+            #     "sector_id",
+            #     "other_subsector_id",
+            #     "planed_amount"
+            # ]
+            # [
+            #     "project_id",
+            #     "province_id",
+            #     "district_id"
+            # ]
+            # [
+            #     'implementing_partner_name',
+            # ]
+            #     [
+            #         'other_subsector_name',
+            #     ]
 
-            )
+        )
+        if form.is_valid():
             return HttpResponse("OK")
         else:
             return HttpResponseBadRequest()
