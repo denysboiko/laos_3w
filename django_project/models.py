@@ -104,10 +104,10 @@ class Project(models.Model):
     project_code = models.CharField(max_length=40, blank=True, null=True)
     project_title = models.TextField(max_length=280)
     start_date = models.DateField()
-    end_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True, default='9999-12-31')
     planed_amount = models.FloatField()
     partner = models.ForeignKey(Partner, related_name='partner_id')
-    implementing_partner = models.ManyToManyField(ImplementingPartner)
+    implementing_partner = models.ManyToManyField(ImplementingPartner, blank=True)
     sector = models.ForeignKey(Sector, related_name='sector_id')
     other_subsector = models.ForeignKey(Subsector, blank=True, null=True)
 
@@ -118,6 +118,8 @@ class Project(models.Model):
 
         if self.start_date > datetime.datetime.today().date():
             return 'Planned'
+        elif self.end_date is None:
+            return 'Ongoing'
         elif self.end_date < datetime.datetime.today().date():
             return 'Closed'
         else:
