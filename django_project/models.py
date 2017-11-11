@@ -1,6 +1,7 @@
 from django.db import models
 from smart_selects.db_fields import ChainedManyToManyField
 import datetime
+from django.contrib.auth.models import User
 
 class Status(models.Model):
 
@@ -27,6 +28,7 @@ class Province(models.Model):
 
     class Meta:
         db_table = 'provinces'
+        ordering = ['name']
 
 
 class District(models.Model):
@@ -80,6 +82,7 @@ class Responsible(models.Model):
 class Partner(models.Model):
 
     partner_name = models.CharField(max_length=80)
+    users_access = models.ManyToManyField(User, blank=True)
 
     def __unicode__(self):
         return self.partner_name
@@ -97,6 +100,7 @@ class ImplementingPartner(models.Model):
 
     class Meta:
         db_table = 'implementing_partners'
+        ordering = ['implementing_partner_name']
 
 
 class Project(models.Model):

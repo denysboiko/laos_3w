@@ -12,7 +12,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
     inlines = (LocationInline,)
     list_filter = ['partner','sector']
-    search_fields = ['project_title', ]
+    search_fields = ['project_title', 'project_code']
     filter_horizontal = ('implementing_partner',)
     list_display = [
         'id',
@@ -23,6 +23,27 @@ class ProjectAdmin(admin.ModelAdmin):
         'sector',
         'planed_amount'
     ]
+
+    def get_queryset(self, request):
+        """Limit Pages to those that belong to the request's user."""
+        qs = super(ProjectAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            # It is mine, all mine. Just return everything.
+            return qs
+        # Now we just add an extra filter on the queryset and
+        # we're done. Assumption: Page.owner is a foreignkey
+        # to a User.
+
+        # print()
+        return qs.filter(partner__in=request.user.partner_set.values_list('pk'))
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """Limit choices for 'picture' field to only your pictures."""
+        if db_field.name == 'partner':
+            if not request.user.is_superuser:
+                kwargs["queryset"] = Partner.objects.filter(id__in=request.user.partner_set.values_list('pk'))
+        return super(ProjectAdmin, self).formfield_for_foreignkey(
+            db_field, request, **kwargs)
 
 
 class ImplementingParntersAdmin(admin.ModelAdmin):

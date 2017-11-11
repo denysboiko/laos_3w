@@ -39,21 +39,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    permission_classes = (AllowAny,)
+    # permission_classes = (AllowAny,)
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-
-
-def Projects(request):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-
-    permission_classes = (AllowAny,)
-    queryset = Project.objects.all().values()
-    serializer = ProjectSerializer(queryset)
-    print (queryset)
-    return JsonResponse({'data': list(queryset)})
 
 
 from django.shortcuts import render_to_response, redirect
@@ -69,7 +57,6 @@ class UploadFileForm(forms.Form):
 
 from django.http import JsonResponse
 
-
 def upload(request):
 
     if request.method == "POST":
@@ -79,7 +66,6 @@ def upload(request):
             return excel.make_response(filehandle.get_sheet(), "csv")
         else:
             return HttpResponseBadRequest()
-
     else:
         form = UploadFileForm()
 

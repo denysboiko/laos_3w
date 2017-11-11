@@ -55,6 +55,11 @@ function wrap(text, width) {
 
 function loadData(err, geodata, data, districts_list, provinces_list, districts) {
 
+    if (!data) {
+        $('#loader').toggleClass('active');
+        return;
+    }
+
     var districtsDict = {};
     var provincesDict = {};
     var districtsNames = {};
