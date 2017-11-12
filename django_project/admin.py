@@ -2,6 +2,9 @@ from .models import *
 from django.contrib import admin
 from django.contrib.admin import AdminSite, ModelAdmin
 
+admin.site.site_header = 'JP Laos - 3W Dashboard'
+admin.site.site_title = '3W administration'
+
 
 class LocationInline(admin.TabularInline):
     model = Location

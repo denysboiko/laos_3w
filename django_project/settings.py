@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'xz%y(fpc13=0ho!6*&!yi!!-)(mspd0xysp1o)a9@d_7w7tpvn'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -86,47 +86,58 @@ WSGI_APPLICATION = 'django_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
-if os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine'):
-
-    # Running on production App Engine, so connect to Google Cloud SQL using
-    # the unix socket at /cloudsql/<your-cloudsql-connection string>
-
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'HOST': '/cloudsql/jp-projects-laos:asia-east1:jp-laos-db',
-            'NAME': 'jplaos',
-            'USER': 'dbadmin',
-            'PASSWORD': 'jp-projects-db',
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+        'NAME': 'jplaos',
+        'USER': 'dbadmin',
+        'PASSWORD': 'jp-projects-db',
     }
+}
 
-else:
-
-    # Running locally so connect to either a local MySQL instance or connect to
-    # Cloud SQL via the proxy. To start the proxy via command line:
-    #
-    #     $ cloud_sql_proxy -instances=[INSTANCE_CONNECTION_NAME]=tcp:3306
-    #
-    # See https://cloud.google.com/sql/docs/mysql-connect-proxy
-
-    # DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.db.backends.mysql',
-    #         'HOST': '127.0.0.1',
-    #         'PORT': '3306',
-    #         'NAME': 'jplaos',
-    #         'USER': 'dbadmin',
-    #         'PASSWORD': 'jp-projects-db',
-    #     }
-    # }
-
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
-    }
+# if os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine'):
+#
+#     # Running on production App Engine, so connect to Google Cloud SQL using
+#     # the unix socket at /cloudsql/<your-cloudsql-connection string>
+#
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.mysql',
+#             'HOST': '/cloudsql/jp-projects-laos:asia-east1:jp-laos-db',
+#             'NAME': 'jplaos',
+#             'USER': 'dbadmin',
+#             'PASSWORD': 'jp-projects-db',
+#         }
+#     }
+#
+# else:
+#
+#     # Running locally so connect to either a local MySQL instance or connect to
+#     # Cloud SQL via the proxy. To start the proxy via command line:
+#     #
+#     #     $ cloud_sql_proxy -instances=[INSTANCE_CONNECTION_NAME]=tcp:3306
+#     #
+#     # See https://cloud.google.com/sql/docs/mysql-connect-proxy
+#
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.mysql',
+#             'HOST': '127.0.0.1',
+#             'PORT': '3306',
+#             'NAME': 'jplaos',
+#             'USER': 'dbadmin',
+#             'PASSWORD': 'jp-projects-db',
+#         }
+#     }
+#     #
+#     # DATABASES = {
+#     #     'default': {
+#     #         'ENGINE': 'django.db.backends.sqlite3',
+#     #         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     #     }
+#     # }
 
 
 FILE_UPLOAD_HANDLERS = ("django_excel.ExcelMemoryFileUploadHandler",

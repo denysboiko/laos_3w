@@ -3,10 +3,15 @@ from .models import *
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 from .serializers import *
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render_to_response, redirect
+from django.http import HttpResponseBadRequest, HttpResponse
+from django import forms
+from django.template import RequestContext
+import django_excel as excel
 
-import json
 
-
+@login_required(login_url='/admin/login/')
 def home(request):
     return render(
         request,
@@ -21,7 +26,6 @@ class ProvinceViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    permission_classes = (AllowAny,)
     queryset = Province.objects.all()
     serializer_class = ProvinceSerializer
 
@@ -30,7 +34,6 @@ class DistrictViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    permission_classes = (AllowAny,)
     queryset = District.objects.all()
     serializer_class = DistinctSerializer
 
@@ -39,23 +42,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    # permission_classes = (AllowAny,)
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-
-
-from django.shortcuts import render_to_response, redirect
-from django.http import HttpResponseBadRequest, HttpResponse
-from django import forms
-from django.template import RequestContext
-import django_excel as excel
 
 
 class UploadFileForm(forms.Form):
     file = forms.FileField()
 
-
-from django.http import JsonResponse
 
 def upload(request):
 
@@ -73,43 +66,8 @@ def upload(request):
                               {'form': form},
                               context_instance=RequestContext(request))
 
-def download(request):
-    sheet = excel.pe.Sheet([[1, 2], [3, 4]])
-    return excel.make_response(sheet, "csv")
 
-
-# def import_data(request):
-#     if request.method == "POST":
-#         form = UploadFileForm(request.POST,
-#                               request.FILES)
-#
-#         def choice_func(row):
-#             q = Province.objects.filter(slug=row[0])[0]
-#             row[0] = q
-#             return row
-#         if form.is_valid():
-#             request.FILES['file'].save_book_to_database(
-#                 models=[Province, Choice],
-#                 initializers=[None, choice_func],
-#                 mapdicts=[
-#                     ['question_text', 'pub_date', 'slug'],
-#                     ['question', 'choice_text', 'votes']]
-#             )
-#             return redirect('handson_view')
-#         else:
-#             return HttpResponseBadRequest()
-#     else:
-#         form = UploadFileForm()
-#     return render(
-#         request,
-#         'upload_form.html',
-#         {
-#             'form': form,
-#             'title': 'Import excel data into database example',
-#             'header': 'Please upload sample-data.xls:'
-#         })
-
-
+@login_required(login_url='/admin/login/')
 def import_sheet(request):
     if request.method == "POST":
         form = UploadFileForm(request.POST,
