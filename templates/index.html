@@ -58,10 +58,6 @@
             fill-opacity: .8;
         }
 
-        {#        .dc-chart g.deselected path {#}
-        {#            fill: #eee;#}
-        {#        }#}
-
         .cleanrow {
             position: relative;
             display: flex;
@@ -76,25 +72,38 @@
             width: 200px;
             position: absolute;
             top: 50px;
-            right: 0px;
+            right: 0;
         }
 
+        .footer {
+            text-align: center;
+            margin-top: 70px;
+            border-top: 1px solid #D4D4D5 !important;
+        }
+
+        .ui.footer.segment {
+            margin: 4em 0 0;
+            padding: 2em 0;
+        }
     </style>
 
 </head>
 <body>
 
 
-<div class="ui secondary pointing menu">
+<div class="ui menu">
 
     <div class="ui container">
+        <div class="item">
+            <img height="35px" src="{% static 'img/jp_logo_square.png' %}">
+        </div>
         <a class="item" href="/">Home</a>
         <a class="item" href="/upload">Upload</a>
         <div class="right menu">
             {% if user.is_authenticated %}
-                <div class="ui pointing dropdown link item">
-                    <span class="text">{{ user }}</span>
-                    <i class="dropdown icon"></i>
+                <div class="ui dropdown item">
+                    {{ user }} <i class="dropdown icon"></i>
+
                     <div class="menu">
                         <div class="header">ACTIONS</div>
                         <a class="item" href="/admin">Administration</a>
@@ -164,14 +173,14 @@
                     funding
                 </div>
             </div>
-{#            <div class="ui statistic right floated column">#}
-{#                <div class="value">#}
-{#                    <span class="filter-funding" id="funding-province"></span>#}
-{#                </div>#}
-{#                <div class="label">#}
-{#                    for selected provinces#}
-{#                </div>#}
-{#            </div>#}
+            {#            <div class="ui statistic right floated column">#}
+            {#                <div class="value">#}
+            {#                    <span class="filter-funding" id="funding-province"></span>#}
+            {#                </div>#}
+            {#                <div class="label">#}
+            {#                    for selected provinces#}
+            {#                </div>#}
+            {#            </div>#}
 
         </div>
 
@@ -234,7 +243,7 @@
                     <h2 class="ui header">Projects by status</h2>
                     <div id="status"></div>
                 </div>
-                <div class="ui" id ="districts" style="display: none">
+                <div class="ui" id="districts" style="display: none">
                 </div>
             </div>
 
@@ -243,7 +252,30 @@
 
     </div>
 </div>
-
+<div class="ui vertical footer segment">
+    <div class="ui center aligned container">
+        <div class="ui stackable divided grid">
+            <div class="nine wide column">
+                <div class="ui message">
+                    <div class="header">
+                        Disclaimer
+                    </div>
+                    <ul class="list">
+                        <li>This platform has been developed as a tool for internal coordination purposes among the
+                            Joint Programming partners.
+                        </li>
+                        <li>The information content in this platform is for internal use only.</li>
+                        <li>The figures represented in this platform are based on the total amount of the projects, and
+                            therefore should be considered as an estimated amount at the province and district level.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="seven wide column">
+                <img src="{% static 'img/jp_logo.png' %}" height="140px" class="ui centered image">
+            </div>
+        </div>
+    </div>
 </body>
 
 
