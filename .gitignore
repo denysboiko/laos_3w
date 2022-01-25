@@ -1,4 +1,8 @@
 # Created by .ignore support plugin (hsz.mobi)
 .gitignore
 .idea/*
-pd
+venv
+py3
+django_project/static/admin/
+django_project/static/rest_framework
+django_project/static/smart-selects
