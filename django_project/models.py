@@ -1,7 +1,9 @@
+import datetime
+
+from django.contrib.auth.models import User
 from django.db import models
 from smart_selects.db_fields import ChainedManyToManyField
-import datetime
-from django.contrib.auth.models import User
+
 
 class Status(models.Model):
 
@@ -37,7 +39,7 @@ class District(models.Model):
     name = models.CharField(max_length=120)
     name_l = models.CharField(max_length=120)
     area = models.FloatField()
-    province = models.ForeignKey(Province, related_name='districts')
+    province = models.ForeignKey(Province, related_name='districts', on_delete=models.CASCADE)
 
     def __unicode__(self):
         return self.name
@@ -110,10 +112,10 @@ class Project(models.Model):
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True, default='9999-12-31')
     planed_amount = models.FloatField()
-    partner = models.ForeignKey(Partner, related_name='partner_id')
+    partner = models.ForeignKey(Partner, related_name='partner_id', on_delete=models.CASCADE)
     implementing_partner = models.ManyToManyField(ImplementingPartner, blank=True)
-    sector = models.ForeignKey(Sector, related_name='sector_id')
-    other_subsector = models.ForeignKey(Subsector, blank=True, null=True)
+    sector = models.ForeignKey(Sector, related_name='sector_id', on_delete=models.CASCADE)
+    other_subsector = models.ForeignKey(Subsector, on_delete=models.CASCADE, blank=True, null=True)
 
     def __unicode__(self):
         return self.project_title
@@ -135,8 +137,8 @@ class Project(models.Model):
 
 class Location(models.Model):
 
-    project = models.ForeignKey(Project, blank=True, null=True, related_name='locations')
-    province = models.ForeignKey(Province)
+    project = models.ForeignKey(Project, blank=True, null=True, related_name='locations', on_delete=models.CASCADE)
+    province = models.ForeignKey(Province, on_delete=models.CASCADE)
     districts = ChainedManyToManyField(
         District,
         # horizontal=True,

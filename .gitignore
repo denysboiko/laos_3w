@@ -1,4 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 .gitignore
-.idea/*
+.idea
+venv
 pd
+django_project/static
+/py3/

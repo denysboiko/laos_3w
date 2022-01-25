@@ -51,7 +51,7 @@ REST_FRAMEWORK = {
     ]
 }
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -92,8 +92,7 @@ DATABASES = {
         'HOST': '127.0.0.1',
         'PORT': '3306',
         'NAME': 'jplaos',
-        'USER': 'dbadmin',
-        'PASSWORD': 'jp-projects-db',
+        'USER': 'root',
     }
 }
 
@@ -131,14 +130,6 @@ DATABASES = {
 #             'PASSWORD': 'jp-projects-db',
 #         }
 #     }
-#     #
-#     # DATABASES = {
-#     #     'default': {
-#     #         'ENGINE': 'django.db.backends.sqlite3',
-#     #         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     #     }
-#     # }
-
 
 FILE_UPLOAD_HANDLERS = ("django_excel.ExcelMemoryFileUploadHandler",
                         "django_excel.TemporaryExcelFileUploadHandler")

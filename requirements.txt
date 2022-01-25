@@ -2,6 +2,8 @@ Django
 django-registration
 django-widget-tweaks
 djangorestframework
+django-smart-selects
 django_excel
-psycopg2
+mysqlclient
+django-mysql
 setuptools

@@ -1,14 +1,11 @@
-from django.shortcuts import render
-from .models import *
-from rest_framework import viewsets
-from rest_framework.permissions import AllowAny
-from .serializers import *
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, redirect
-from django.http import HttpResponseBadRequest, HttpResponse
-from django import forms
-from django.template import RequestContext
 import django_excel as excel
+from django import forms
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseBadRequest, HttpResponse
+from django.shortcuts import render
+from rest_framework import viewsets
+
+from .serializers import *
 
 
 @login_required(login_url='/admin/login/')
@@ -62,9 +59,7 @@ def upload(request):
     else:
         form = UploadFileForm()
 
-    return render_to_response('upload.html',
-                              {'form': form},
-                              context_instance=RequestContext(request))
+    return render(request, 'upload.html', {'form': form})
 
 
 @login_required(login_url='/admin/login/')
